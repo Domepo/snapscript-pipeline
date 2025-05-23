@@ -4,7 +4,7 @@
 DB_NAME = "presentation_slides.db"
 
 # Ollama Modellname
-OLLAMA_MODEL = 'gemma3:27b' # oder 'llava', 'gemma:2b' etc.
+OLLAMA_MODEL = 'gemma3:12b' # oder 'llava', 'gemma:2b' etc.
 
 
 FULL_TRANSRIPT_TEXT = '''Ja, herzlich willkommen zur heutigen Vorlesung. Heute soll es um Livestream-Technik gehen.

@@ -2,7 +2,7 @@
 
 import ollama
 import config
-
+import fuzz_operation as fo
 def get_relevant_section_from_ollama(image_path: str, full_transcript_text: str) -> str | None:
     """
     Sendet das Bild und den VOLLSTÄNDIGEN Transkripttext an Ollama und gibt den relevanten Abschnitt zurück.
@@ -43,7 +43,10 @@ def get_relevant_section_from_ollama(image_path: str, full_transcript_text: str)
             if relevant_section:
                 # Zusätzliche Prüfung, ob der Abschnitt auch wirklich im Original vorkommt
                 # Dies kann Ollama-Halluzinationen oder kleine Abweichungen abfangen
+                relevant_section = fo.find_paragraph_with_fuzzing(full_transcript_text,relevant_section)
+
                 if relevant_section in full_transcript_text:
+                    print(relevant_section)
                     return relevant_section
                 else:
                     # Versuch einer "Fuzzy"-Suche oder Loggen des Problems
