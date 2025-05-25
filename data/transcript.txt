@@ -1,7 +1,4 @@
-from thefuzz import fuzz
-from thefuzz import process
-import app.services.fuzzing_service as fo
-FULL_TRANSRIPT_TEXT = '''Ja, herzlich willkommen zur heutigen Vorlesung. Heute soll es um Livestream-Technik gehen.
+Ja, herzlich willkommen zur heutigen Vorlesung. Heute soll es um Livestream-Technik gehen.
 Genau, da unterteilen wir verschiedene Bereiche. Also wir haben einen Bildbereich,
 einen Videobereich, natürlich die Lichtbereiche, sozusagen wie das alles ausgeleuchtet werden
 muss. Und das werden wir in so einem schönen Diagramm haben. Nämlich das sind die verschiedenen
@@ -86,29 +83,3 @@ Warum machen wir das alles?
 Wir wollen natürlich Zuschauerzeit und wir wollen auch gleichzeitig, dass sich die Bindung erhöht.
 Also das heißt, dass sich die Zeit, wie lange ein Zuschauer drauf bleibt, auch erhöht in Bezug auf die Watchtime.
 Ja, vielen Dank. Das war's auch schon.
-'''
-
-
-# Beispiel: in Zeilen aufteilen
-lines = FULL_TRANSRIPT_TEXT.splitlines()
-
-# oder in Sätze aufteilen (wenn jeder Satz mit Punkt endet)
-# lines = FULL_TRANSRIPT_TEXT.split('.')
-
-query = "Und hier das und da gibt es verschiedene Optionen."
-
-# besten Treffer holen
-best_match = process.extractOne(
-    query,
-    lines,
-    scorer=fuzz.token_set_ratio  # oder fuzz.token_sort_ratio, je nach Bedarf
-)
-
-print(best_match)
-# best_match ist ein Tuple: (matched_line, score, index)
-
-# start_index = FULL_TRANSRIPT_TEXT.index("dass man hier Anschlüsse hat. Zum Beispiel ein In-STI") # Nutzt str.index, wirft ValueError wenn nicht gefunden
-# print(start_index + len("dass man hier Anschlüsse hat. Zum Beispiel ein In-STI"))
-relevant_section = "dass man hier Anschlüsse hat. Zum Beispiel ein In-STI"
-relevant_section = fo.find_paragraph_with_fuzzing(FULL_TRANSRIPT_TEXT,relevant_section)
-print(relevant_section)

@@ -1,11 +1,11 @@
 import os
+import config
 from models.database import init_db
 from models.transcript import add_transcript
 from models.image_marker import add_image_marker
 from services.ollama_service import get_relevant_section
 from controllers.transcript_controller import reconstruct_transcript_with_images
 from utils.text_utils import find_section_end_offset 
-import config
 
 
 
@@ -16,7 +16,7 @@ def main():
     #    Lies es aus einer Datei oder definiere es hier.
    
 
-    full_transcript_text = config.FULL_TRANSRIPT_TEXT
+    full_transcript_text = config.FULL_TRANSCRIPT_TEXT
 
     
     # Füge das Transkript hinzu, wenn es noch nicht existiert, oder hole eine bestehende ID.
@@ -32,7 +32,7 @@ def main():
     # Angenommen, du hast eine Liste von Bildern, die du verarbeiten möchtest
     images_to_process = [
         "data/analysis.png", # Bild zur OBS-Sektion
-        "data/body.PNG"
+        # "data/body.PNG"
     ]
 
     for image_path in images_to_process:
