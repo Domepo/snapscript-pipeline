@@ -80,7 +80,7 @@ if __name__ == "__main__":
     # 3. Bilder und ihre Zuordnung
     # Angenommen, du hast eine Liste von Bildern, die du verarbeiten möchtest
     images_to_process = [
-        r"C:\Users\domin\Downloads\3ee2bfc8-cbcb-4373-b77e-92c1e71615fb1.png", # Bild zur OBS-Sektion
+        r"C:\Users\domin\Downloads\Screenshot 2025-05-23 153453.png", # Bild zur OBS-Sektion
         # r"pfad/zu/anderem_bild.png", # Z.B. ein Bild zur CCU
         # r"pfad/zu/noch_ein_bild.png" # Z.B. ein Bild zum Videomischer
     ]
