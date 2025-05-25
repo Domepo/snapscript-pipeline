@@ -1,6 +1,6 @@
 from thefuzz import fuzz
 from thefuzz import process
-import fuzz_operation as fo
+import app.services.fuzzing_service as fo
 FULL_TRANSRIPT_TEXT = '''Ja, herzlich willkommen zur heutigen Vorlesung. Heute soll es um Livestream-Technik gehen.
 Genau, da unterteilen wir verschiedene Bereiche. Also wir haben einen Bildbereich,
 einen Videobereich, natürlich die Lichtbereiche, sozusagen wie das alles ausgeleuchtet werden
