@@ -8,6 +8,7 @@ from services.yolo_service import get_crop_image
 from controllers.transcript_controller import reconstruct_transcript_with_images
 from utils.text_utils import find_section_end_offset 
 from lecture.video_whisper import video_transcript
+from lecture.pdf_extractor import convert_pdfs_in_folder
 
 
 def main():
@@ -68,8 +69,8 @@ def main():
 
 
 if __name__ == "__main__":
-    # video_transcript()
-    # print(yolo_fix("data\images\cropped\crop_0_3ee2bfc8-cbcb-4373-b77e-92c1e71615fb.png"))
-    get_crop_image()
+    video_transcript("data/videos/Download.mp4")
+    convert_pdfs_in_folder("data/pdf", "data/lecture_images")
+    get_crop_image("data/lecture_images", "data/cropped", "data/cropped_failed")
     # main()
 

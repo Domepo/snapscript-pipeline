@@ -1,12 +1,11 @@
 import os
 from pdf2image import convert_from_bytes
 
-def convert_pdfs_in_folder(pdf_folder: str, output_subfolder: str = "data/lecture_images") -> list:
+def convert_pdfs_in_folder(pdf_folder: str, output_folder: str = "data/lecture_images") -> list:
     """
     Konvertiert alle PDF-Dateien in einem Ordner zu JPEG-Bildern.
     Gibt eine Liste der gespeicherten Bildpfade zurück.
     """
-    output_folder = os.path.join(pdf_folder, output_subfolder)
     os.makedirs(output_folder, exist_ok=True)
 
     saved_images = []

@@ -6,8 +6,9 @@ DB_NAME = "presentation_slides.db"
 # Ollama Modellname
 OLLAMA_MODEL = 'gemma3:12b' # oder 'llava', 'gemma:2b' etc.
 
+YOLO_MODELL = 'data/weights/best.pt'
 
-TRANSCRIPT_PATH = "data/transcript.txt"
+TRANSCRIPT_PATH = "data/transcript/transcript.txt"
 
 # Lade Transkripttext aus Datei (falls vorhanden)
 try:

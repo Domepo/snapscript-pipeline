@@ -13,12 +13,15 @@ def yolo_fix(image_path: str) -> bool | None:
                 {
                     'role': 'system',
                     'content': (
-                        'Determine if the image depicts a hand-drawn representation of an object, diagram, or scene.' 
-                        'The image should contain recognizable shapes or elements that suggest a deliberate attempt to visually represent something.'
-                        ' Specifically, Im looking for images that appear to be sketched or drawn by hand, not digitally created. Exclude images that consist solely of'
-                        ' text, formulas, or simple geometric shapes like lines or basic outlines, or that are clearly screenshots of digital interfaces or presentations.'
-                        'Respond ONLY with "True" if it meets the criteria, and "False" otherwise. ONLY WITH True OR False, there is no circumstance where you would answer anything else!'
-
+                    'Determine if the image depicts a hand-drawn representation of an object, diagram, or scene where the visual representation is the **primary focus**.'
+                    'The image should contain recognizable hand-drawn shapes or elements that suggest a deliberate attempt to visually represent something as its main subject.'
+                    'Specifically, I\'m looking for images that appear to be sketched or drawn by hand, not digitally created.'
+                    'Exclude images:'
+                    '1. That consist **primarily of text**, formulas, or notes, even if they contain minor hand-drawn icons, embellishments, or simple connecting lines that are secondary to the text.'
+                    '2. That consist only of abstract simple geometric shapes like isolated lines or basic outlines not forming a cohesive recognizable depiction.'
+                    '3. That are clearly screenshots of digital interfaces or presentations.'
+                    'Respond ONLY with "True" if it meets the criteria, and "False" otherwise.'
+                    'ONLY WITH True OR False, there is no circumstance where you would answer anything else!'
 
                     )
                 },
