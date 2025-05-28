@@ -176,6 +176,8 @@ cython_debug/
 
 # Ruff stuff:
 .ruff_cache/
+data/cropped/*
+data/images/*
 
 # PyPI configuration file
 .pypirc

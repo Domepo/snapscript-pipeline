@@ -4,9 +4,10 @@ from models.database import init_db
 from models.transcript import add_transcript
 from models.image_marker import add_image_marker
 from services.ollama_service import get_relevant_section
+from services.yolo_service import get_crop_image
 from controllers.transcript_controller import reconstruct_transcript_with_images
 from utils.text_utils import find_section_end_offset 
-
+from lecture.video_whisper import video_transcript
 
 
 def main():
@@ -67,4 +68,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # video_transcript()
+    # print(yolo_fix("data\images\cropped\crop_0_3ee2bfc8-cbcb-4373-b77e-92c1e71615fb.png"))
+    get_crop_image()
+    # main()
+
