@@ -1,0 +1,139 @@
+ Herzlich Willkommen zur heutigen Vorlesung.
+Heute soll es um Livestream-Technik gehen.
+Da unterteilen wir verschiedene Bereiche.
+Wir haben einen Bildbereich, einen Videobereich, die Lichtbereiche, wie das alles ausgeleuchtet werden muss.
+Das werden wir in so einem schönen Diagramm haben.
+Das sind die verschiedenen Ebenen.
+Wir haben natürlich ganz oben das, was man sieht.
+Das, was man sieht, ist ein Auge.
+Dann haben wir hier natürlich die Kabel und die ganzen Verbindungen und unten haben wir dann Software.
+Wichtig ist auch, dass, ja, das ist ein Zitat von mir, das OBS ist das Tor zum guten Livestream.
+Ja, dann würde ich einmal gerne mit den Kameras anfangen.
+Genau, hier symbolisch eine Kamera.
+Also wir haben natürlich verschiedene Möglichkeiten.
+Es gibt natürlich HDMI-betriebene Kameras.
+Wir haben auch SDI-Kameras und wir haben natürlich auch Glasfaser und auch noch IP, also Ethernet Kameras.
+Bei HDMI ist es natürlich so, dass wir nur kurze Strecken, kurze Strecken, aber hohe Bandbreite.
+SDI haben wir sehr lange Strecken und ja, eine etwas niedrigere Bandbreite.
+Glasfaser haben wir dann gigantische Strecken, gigantische Bandbreite.
+Und bei IP Ethernet haben wir, ist ja das Ding, dass man vielleicht noch mit ein paar Latenzen zu kämpfen nimmt, aber seit dem neuen IB2110 Standard von MacMagic ist das auch schon, ja, nicht mehr so wichtig.
+Genau, wie ist eine Kamera aufgebaut?
+Wir haben zum einen, das nennt man Buddy.
+Dieses Buddy ist dann das Kamera mit einem gewissen Bayonet.
+Und das ist hier das Bayonet.
+Bayonet.
+Und da gibt es verschiedene Optionen.
+Man hat, man hat EF, Bayonet zum Beispiel von Canon.
+Also hier kann ich aber hinschreiben.
+Canon ist gleich EF.
+Fujifilm hat mehrere.
+Eins davon ist die XF-Serie.
+Aber das ist einfach nur der Verschluss für das Objektiv, was dann hier hinkommt.
+Hier ist das Objektiv.
+Und an dem Objektiv kann man auch noch Filter dran machen.
+Filter.
+Und da gibt es zum Beispiel UV-Filter.
+Also es gibt verschiedenste Filter.
+UV-Filter.
+UV-Filter.
+Wir haben Mistfilter für so einen Glow-Effekt.
+Und ja, dann haben wir auch noch, gibt es auch noch Variable.
+Variable ND.
+Da komme ich aber später nochmal zu.
+Ein Buddy hat auch noch die Möglichkeit, dass man hier Anschlüsse hat.
+Zum Beispiel ein In-SDI und ein Out-SDI.
+Was dann zu einer CCU geht, wo ich jetzt hin gehen will.
+Und zwar haben wir jetzt CCU.
+Was ist CCU?
+Camera Control Unit.
+Genau.
+Also das ist Camera.
+Damit lassen sich dann Kameras steuern.
+Das ist von Blackmagic zum Beispiel so ein Teil hier.
+Hier hat man dann verschiedene Knöpfe.
+Dann hat man meistens noch so einen großen Regler, mit dem man hoch- und runterschieben kann.
+Natürlich hier noch die Program-Knöpfe.
+Und Preview-Knöpfe.
+Und dann hat man auch noch verschiedene Texte.
+Hier gibt es so Labels.
+Jetzt steht hier Text.
+Text.
+Text.
+Text.
+Und damit ist es dann möglich.
+Zum einen den Fokus.
+Zum einen den Zoom.
+Und dann noch verschiedene Bildwerte wie Weißabgleich.
+Und dann gibt es dann auch noch die Iris.
+Also die Verblende.
+Dann auch noch Farbkorrekturen.
+Also können wir LUTs nennen.
+Look-up-Tables.
+Und die gehen dann gebündelt durch ein Kabel.
+Das ist das SDI Out.
+Weil das ja Ne, das ist Also von dieser Perspektive ist das SDI Out.
+Und das geht dann Hier haben wir ja die Kamera.
+Das geht dann in den SDI In.
+Und der SDI Out von der Kamera.
+Der geht dann in einen Recorder rein.
+Zum Beispiel in einen PC.
+Und der schmeißt das dann in OBS.
+Genau.
+Was ist OBS?
+Komme ich jetzt zu.
+OBS.
+Das ist der Open Das ist eine Open Broadcaster Software.
+Und da haben wir zum einen den PC mit einem Record.
+Mit einer Recording Card.
+Zum Beispiel auch von Blackmagic.
+Blackmagic 4K-Karte.
+Ist auch eigentlich egal.
+Und da gehen dann die Signale von der CCU Äh, von dem SDI Out rein.
+Der dann ja auch wieder von einem Videomischer kommt.
+Komme ich nachher zu.
+Und OBS nimmt jetzt dieses Signal.
+Also das ist jetzt sozusagen im PC drin.
+PC.
+Die Verbindung.
+Und dann hat OBS eine schöne Oberfläche.
+Hier hat man die Quellen.
+Dann hat man hier Zum Beispiel Einstellungen.
+Und hier hat man dann Stream starten.
+Und alles mögliche.
+Hier hat man Kann man das dann so einstellen, dass man zum einen ein Program und ein Preview hat.
+Also Einmal ein Program und ein Preview.
+Oder andersrum.
+Kann man noch tauschen, wie man lustig ist.
+Und dadurch kann dieses Signal Dann zu YouTube geschickt werden.
+Ja.
+Dann Gucken wir uns mal an, was passiert.
+Was ist bei YouTube?
+Also bei YouTube haben wir die Möglichkeit, diesen Stream bereit zu stellen.
+Gleichzeitig haben wir auch noch die Möglichkeit, ja, Analytics.
+Analytics.
+Also Ne?
+Wie die Zuschauerzahlen aussehen.
+Dann haben wir auch noch Moderationsfunktion.
+Funktionen.
+Funktionen.
+Darunter zählen dann Kommentare.
+Likes.
+Etc.
+Ja.
+Und Das alles ist dann recht wichtig, damit man einen Überblick hat, wie ein Stream ankommt.
+Genau.
+Und ich habe davor über einen Videomischer geredet.
+Einen Videomischer.
+Weil wir haben ja jetzt zum Beispiel Also den brauchen wir.
+Oder sagen wir mal so.
+Der Sollzustand ist mehrere Kameras.
+Und Steuerung aller Kameras.
+Also machen wir Kamera mal N ist gleich ähm F von X hoch N minus die Wurzel aus YouTube.
+Genau.
+Recht einfache Gleichung.
+Ähm Aus der folgt dann natürlich auch dass E gleich M C Quadrat ist.
+Ne?
+Ganz simpel.
+Wegen dem N, was sich jetzt zum E transformiert.
+Und dadurch hat man ja dann auch die Fourier transformierte der inneren Steigungsfunktion vom Tangentenbeispiel wie bereits gesagt also das Integral von D von X minus ähm ja 100 100 F Z hoch Pi Cosinus Sinus von X Klammer zu Ja und das der Videomischer sieht dann wie folgt aus man hat hier die Knöpfe hier oben hat man Knöpfe und dann hat man hier einen Regler den man hoch oder runter schieben kann und an dieses Gerät kann man dann Kameras anschließen die dann auch mit der CCU verbunden werden wenn wir zum Beispiel mal zwei Kameras genau und dann braucht das natürlich noch Strom ne AC Strom meistens redundant und das Ding ist zum Beispiel von Atem von Blackmagic ein Gerät ja so könnte ein Videomischer aussehen Warum machen wir das alles?
+Wir wollen natürlich ähm Zuschauer Zeit und wir wollen auch gleichzeitig dass sich die Bindung erhöht also das heißt dass sich die Zeit ne lange ein Zuschauer drauf bleibt auch erhöht in Bezug auf die Watchtime Ja vielen Dank das war's auch schon
