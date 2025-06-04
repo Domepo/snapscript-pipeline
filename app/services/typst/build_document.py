@@ -7,7 +7,7 @@ from services.typst.builders import (
     build_sys_inputs
 )
 from services.typst.compiler import compile_document
-import typst # Für typst.TypstCompileError in der Fehlerbehandlung
+import typst 
 
 
 # === PARSER-LOGIK (MIT KORRIGIERTER BILDERKENNUNG) ===
@@ -194,7 +194,7 @@ def parse_markdown_to_document_parts(markdown_text: str):
 # Genau, wie ist eine Kamera aufgebaut? Wir haben zum einen, das nennt man Buddy. Dieses Buddy ist dann die Kamera mit einem gewissen Bayonet. Und das ist hier das Bayonet. Bayonet. Und da gibt es verschiedene Optionen. Man hat EF-Bayonets, zum Beispiel von Canon. Also hier kann ich hinschreiben: Canon ist gleich EF. Fujifilm hat mehrere. Eins davon ist die XF-Serie. Aber das ist einfach nur der Verschluss für das Objektiv, was dann hier hinkommt. Hier ist das Objektiv.
 
 # [data/cropped/crop_0_camera-7.jpg]
-# """
+# # """
 
 
 def main(markdown_input: str):

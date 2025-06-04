@@ -19,6 +19,7 @@ def transcript_to_script(full_transcript_text: str) -> str | None:
                     'Unterteile den Text zusätzlich in Abschnitte und kennzeichne die Abschnittsüberschriften mit' 
                     'einem ## (wie in Markdown). Und die Hauptüberschritt mit einem #'
                     'Direkt unter der Hauptüberschrift soll eine kurze Zusammenfassung des Inhalts stehen.'
+                    'Schreibe die Textblöcke jewails immer in eine Zeile, ohne Zeilenumbrüche.'
                     'Dann starte mit den Sektionen, hier ein Beispiel:\n\n'
                     
                     '# Livestream-Technik'
