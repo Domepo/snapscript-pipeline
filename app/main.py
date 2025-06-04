@@ -6,6 +6,7 @@ from models.image_marker import add_image_marker
 from services.ollama_service import get_relevant_section
 from services.yolo_service import get_crop_image
 from services.transcript_to_script_service import transcript_to_script
+from services.typst.build_document import main
 from controllers.transcript_controller import images_in_transcript
 from utils.text_utils import find_section_end_offset 
 from lecture.video_whisper import video_transcript
@@ -130,5 +131,7 @@ if __name__ == "__main__":
     Wir wollen natürlich Zuschauerzeit und wir wollen auch gleichzeitig, dass sich die Bindung erhöht, also dass sich die Zeit, die ein Zuschauer drauf bleibt, erhöht, in Bezug auf die Watchtime.
     Ja, vielen Dank, das war's auch schon.
     """
-    # main()
+    t = transcript_to_script(transcript)
+    print(t)
+    main(t)
 
