@@ -22,7 +22,10 @@ def reconstruct_transcript_with_images(transcript_id: int) -> str | None:
 
     for marker in markers:
         offset = marker['char_offset']
-        placeholder = f"\n[BILD: {os.path.basename(marker['image_path'])}]\n"
+        # placeholder = f"\n[BILD: {os.path.basename(marker['image_path'])}]\n"
+        image_path_normalized = marker['image_path'].replace("\\", "/")
+        placeholder = f"\n[{image_path_normalized}]\n"
+
         parts.append(full_text[offset:last_offset])
         parts.append(placeholder)
         last_offset = offset
