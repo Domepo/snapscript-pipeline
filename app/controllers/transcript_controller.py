@@ -33,7 +33,7 @@ def reconstruct_transcript_with_images(transcript_id: int) -> str | None:
     parts.append(full_text[:last_offset])
     return "".join(reversed(parts))
 
-def images_in_transcript(images_dir: str = "data/cropped") -> None:
+def images_in_transcript(images_dir: str = "data/cropped", transcript:str = config.FULL_TRANSCRIPT_TEXT) -> None:
     """
     Hauptfunktion, die den gesamten Prozess der Bildverarbeitung und Transkript-Rekonstruktion steuert.
     """ 
@@ -41,7 +41,7 @@ def images_in_transcript(images_dir: str = "data/cropped") -> None:
     init_db()
    
 
-    full_transcript_text = config.FULL_TRANSCRIPT_TEXT
+    full_transcript_text = transcript
 
     
     # Füge das Transkript hinzu, wenn es noch nicht existiert, oder hole eine bestehende ID.

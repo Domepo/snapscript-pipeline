@@ -6,7 +6,8 @@ from models.image_marker import add_image_marker
 from services.ollama_service import get_relevant_section
 from services.yolo_service import get_crop_image
 from services.transcript_to_script_service import transcript_to_script
-from services.typst.build_document import main
+from services.typst.build_document import create_typst_document
+from services.ollama_create_keywords import create_keywords
 from controllers.transcript_controller import images_in_transcript
 from utils.text_utils import find_section_end_offset 
 from lecture.video_whisper import video_transcript
@@ -131,7 +132,35 @@ if __name__ == "__main__":
     Wir wollen natürlich Zuschauerzeit und wir wollen auch gleichzeitig, dass sich die Bindung erhöht, also dass sich die Zeit, die ein Zuschauer drauf bleibt, erhöht, in Bezug auf die Watchtime.
     Ja, vielen Dank, das war's auch schon.
     """
-    t = transcript_to_script(transcript)
-    print(t)
-    main(t)
+    # t = transcript_to_script(transcript)
+u = """   
+    Das ist eine ZUsammenfassung der Vorlesung, die ich heute gehalten habe.
+Hier kommt die Zusammenfassung deiner Vorlesung/dokument. Beschreibe knapp, worum es geht.  
 
+## Test
+Herzlich willkommen zur heutigen Vorlesung. Heute soll es um Livestream-Technik gehen. Da unterteilen wir verschiedene Bereiche: den Bildbereich, den Videobereich, die Lichtbereiche – wie das alles ausgeleuchtet werden muss. Das werden wir in einem schönen Diagramm haben. Das sind die verschiedenen Ebenen. Wir haben natürlich ganz oben das, was man sieht. Das, was man sieht, ist ein Auge. Dann haben wir hier die Kabel und die ganzen Verbindungen und unten haben wir dann Software.
+
+## OBS: Das Tor zum guten Livestream
+
+Wichtig ist auch, dass – das ist ein Zitat von mir – OBS das Tor zum guten Livestream ist.
+
+## Kameras und Anschlüsse
+
+Dann würde ich einmal gerne mit den Kameras anfangen. Genau, hier symbolisch eine Kamera. Also, wir haben verschiedene Möglichkeiten: HDMI-betriebene Kameras, SDI-Kameras, Glasfaser und auch IP, also Ethernet-Kameras. Bei HDMI ist es so, dass wir nur kurze Strecken, aber hohe Bandbreite haben. SDI haben wir sehr lange Strecken und eine etwas niedrigere Bandbreite. Glasfaser hat dann gigantische Strecken und gigantische Bandbreite. Und bei IP-Ethernet haben wir – das ist das Ding – dass man vielleicht noch mit ein paar Latenzen zu kämpfen hat, aber seit dem neuen IB2110-Standard von MacMagic ist das auch schon nicht mehr so wichtig.
+
+[data/cropped/crop1camera4.jpg]
+
+## Kamera-Aufbau: Buddy, Bayonett und Objektive
+
+Genau, wie ist eine Kamera aufgebaut? Wir haben zum einen, das nennt man Buddy. Dieses Buddy ist dann die Kamera mit einem gewissen Bayonet. Und das ist hier das Bayonet. Bayonet. Und da gibt es verschiedene Optionen. Man hat EF-Bayonets, zum Beispiel von Canon. Also hier kann ich hinschreiben: Canon ist gleich EF. Fujifilm hat mehrere. Eins davon ist die XF-Serie. Aber das ist einfach nur der Verschluss für das Objektiv, was dann hier hinkommt. Hier ist das Objektiv.
+
+[data/cropped/crop_0_camera-7.jpg]
+
+    """
+video_transcript("data/videos/Download.mp4",config.TRANSCRIPT_PATH)
+script = transcript_to_script(config.TRANSCRIPT_PATH)
+convert_pdfs_in_folder("data/pdf", "data/lecture_images")
+get_crop_image("data/lecture_images", "data/cropped", "data/cropped_failed")
+images_in_transcript("data/cropped", config.FULL_TRANSCRIPT_TEXT)
+keywords = create_keywords(script)
+create_typst_document(script, keywords)

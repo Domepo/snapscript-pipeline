@@ -3,7 +3,7 @@ from services.ollama_fix_lecture_service import lecture_fix
 import config
 import re
 
-def video_transcript(video_path:str):
+def video_transcript(video_path:str, output_path:str = config.TRANSCRIPT_PATH) -> None:
     """
     Convert Video to Transcript txt
     """
@@ -24,7 +24,7 @@ def video_transcript(video_path:str):
 
     # Speichern
     fixed_text = lecture_fix(cleaned_text)
-    output_path = config.TRANSCRIPT_PATH
+    output_path = output_path
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(fixed_text)
 

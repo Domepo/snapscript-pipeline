@@ -8,8 +8,9 @@ from services.typst.builders import (
 )
 from services.typst.compiler import compile_document
 import typst 
-
-
+import datetime
+import config
+import json
 # === PARSER-LOGIK (MIT KORRIGIERTER BILDERKENNUNG) ===
 def parse_markdown_to_document_parts(markdown_text: str):
     lines = markdown_text.strip().split('\n')
@@ -197,13 +198,13 @@ def parse_markdown_to_document_parts(markdown_text: str):
 # # """
 
 
-def main(markdown_input: str):
+def create_typst_document(markdown_input: str,  keywords_str: str):
     # === 1. Metadaten definieren (bleibt meist manuell) ===
     first_person_dict = build_first_person(
-        name="Prof. Dr. rer. nat. Vorname Nachname",
-        uni="Beispiel-Universität",
-        email="email@beispiel.de",
-        phone="+49 1234 567890"
+        name="Prof. Dr. rer. nat. Johannes Üpping",
+        uni="Technische Hochschule Ostwestfalen-Lippe",
+        email="johannes.uepping@th-owl.de",
+        phone="+49 5261 702 5878"
     )
 
     # === Parser aufrufen ===
@@ -214,8 +215,11 @@ def main(markdown_input: str):
     heading_dict = build_heading(
         title=parsed_title,
         abstract=parsed_abstract_str,
-        keywords=["Livestream", "Technik", "OBS", "Kameras"], 
-        date="4 Juni, 2025" 
+        # keywords=["Livestream", "Technik", "OBS", "Kameras"], 
+        keywords=json.loads(keywords_str),
+        # Beispiel: ["Livestream", "Technik", "OBS", "Kameras"]
+
+        date=f"{(d:=datetime.datetime.now()).day}. {d:%B %Y}"
     )
 
     # === 2. Abschnitte (Sections) verwenden die geparsten Daten ===
@@ -229,9 +233,9 @@ def main(markdown_input: str):
     )
 
     # === 4. Dokument kompilieren ===
-    typst_input_path = "C:/Users/domin/Documents/02_Github/snapscript-pipeline/data/typst/lecture.typ"
-    pdf_output_path   = "C:/Users/domin/Documents/02_Github/snapscript-pipeline/data/typst/lecture.pdf"
-    root_directory    = "C:/Users/domin/Documents/02_Github/snapscript-pipeline/data"
+    typst_input_path = config.TPYST_INPUT_PATH
+    pdf_output_path   = config.TYPST_PDF_OUTPUT_PATH
+    root_directory    = config.ROOT_DIRECTORY
 
     print("Starte Typst-Kompilierung...")
     print(f"  Typst Input: {typst_input_path}")
