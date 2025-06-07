@@ -4,8 +4,8 @@ import os
 DB_NAME = "presentation_slides.db"
 
 # Ollama Modellname
-OLLAMA_MODEL = 'gemma3:27b' # oder 'llava', 'gemma:2b' etc.
-
+OLLAMA_MODEL = 'gemma3:4b' # oder 'llava', 'gemma:2b' etc.
+OLLAMA_NUM_CTX = 131072
 YOLO_MODELL = 'data/weights/best.pt'
 
 TRANSCRIPT_PATH = "data/transcript/transcript.txt"

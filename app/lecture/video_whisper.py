@@ -1,5 +1,5 @@
-import whisper
 from services.ollama_fix_lecture_service import lecture_fix
+import whisper
 import config
 import re
 
@@ -23,10 +23,10 @@ def video_transcript(video_path:str, output_path:str = config.TRANSCRIPT_PATH) -
     cleaned_text = formatted_text.replace("...", "")  # oder lassen, wenn gewünscht
 
     # Speichern
-    fixed_text = lecture_fix(cleaned_text)
+    # fixed_text = lecture_fix(cleaned_text)
     output_path = output_path
     with open(output_path, "w", encoding="utf-8") as f:
-        f.write(fixed_text)
+        f.write(cleaned_text)
 
     print(f"Transkript mit Absätzen gespeichert unter: {output_path}")
 

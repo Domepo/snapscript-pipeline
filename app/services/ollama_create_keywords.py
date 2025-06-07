@@ -15,7 +15,9 @@ def create_keywords(full_transcript_text: str) -> str | None:
                     'content': (
                         'Fasse den Text in 5-10 Keywords zusammen.' 
                         'Jedes Keyword sollte nur ein einzelnes Wort sein.' 
-                        'Gib die Keywords in folgendem Format aus: ["Keyword1", "Keyword2"]'
+                        'Gib die Keywords in folgendem Format aus: """["Keyword1", "Keyword2"]"""'
+                        'DU DARFST NUR DIE KEYWORDS AUSGEBEN UND KEINE ERKLÄRUNG DAZU GEBEN.'
+                        'KEINE ANDEREN SACHEN AUSGEBEN, NUR DIE KEYWORDS!'
 
                     )
                 },

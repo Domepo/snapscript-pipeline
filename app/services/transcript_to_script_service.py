@@ -1,11 +1,18 @@
 import ollama
 import config
 
-def transcript_to_script(full_transcript_text: str) -> str | None:
+def transcript_to_script(transcript_path: str) -> str | None:
     """
     Schreib das Transcript in ein Skript für Vorlesungsinhalte um.
     """
-
+    try:
+        with open(transcript_path, "r", encoding="utf-8") as f:
+            full_transcript_text = f.read()
+            print(full_transcript_text)
+    except FileNotFoundError:
+        print(f"WARNUNG: Transkriptdatei '{transcript_path}' nicht gefunden.")
+        return None
+    
     print(f"Sende Anfrage an Ollama mit Modell {config.OLLAMA_MODEL} ...")
     try:
         response = ollama.chat(
@@ -22,34 +29,36 @@ def transcript_to_script(full_transcript_text: str) -> str | None:
                     'Schreibe die Textblöcke jewails immer in eine Zeile, ohne Zeilenumbrüche.'
                     'Dann starte mit den Sektionen, hier ein Beispiel:\n\n'
                     
-                    '# Livestream-Technik'
-                    'Das ist eine ZUsammenfassung der Vorlesung, die ich heute gehalten habe.'
-                    'Hier kommt die Zusammenfassung deiner Vorlesung/dokument. Beschreibe knapp, worum es geht.'
-                    '## Test'
-                    'Herzlich willkommen zur heutigen Vorlesung. Heute soll es um Livestream-Technik gehen. Da unterteilen wir verschiedene Bereiche: den Bildbereich, den Videobereich, die Lichtbereiche – wie das alles ausgeleuchtet werden muss. Das werden wir in einem schönen Diagramm haben. Das sind die verschiedenen Ebenen. Wir haben natürlich ganz oben das, was man sieht. Das, was man sieht, ist ein Auge. Dann haben wir hier die Kabel und die ganzen Verbindungen und unten haben wir dann Software.'
-                    '## OBS: Das Tor zum guten Livestream'
-                    'Wichtig ist auch, dass – das ist ein Zitat von mir – OBS das Tor zum guten Livestream ist.'
-                    '## Kameras und Anschlüsse'
-                    'Dann würde ich einmal gerne mit den Kameras anfangen. Genau, hier symbolisch eine Kamera. Also, wir haben verschiedene Möglichkeiten: HDMI-betriebene Kameras, SDI-Kameras, Glasfaser und auch IP, also Ethernet-Kameras. Bei HDMI ist es so, dass wir nur kurze Strecken, aber hohe Bandbreite haben. SDI haben wir sehr lange Strecken und eine etwas niedrigere Bandbreite. Glasfaser hat dann gigantische Strecken und gigantische Bandbreite. Und bei IP-Ethernet haben wir – das ist das Ding – dass man vielleicht noch mit ein paar Latenzen zu kämpfen hat, aber seit dem neuen IB2110-Standard von MacMagic ist das auch schon nicht mehr so wichtig.'
-                    '[data/cropped/crop1camera4.jpg]'
-                    '## Kamera-Aufbau: Buddy, Bayonett und Objektive'
-                    'Genau, wie ist eine Kamera aufgebaut? Wir haben zum einen, das nennt man Buddy. Dieses Buddy ist dann die Kamera mit einem gewissen Bayonet. Und das ist hier das Bayonet. Bayonet. Und da gibt es verschiedene Optionen. Man hat EF-Bayonets, zum Beispiel von Canon. Also hier kann ich hinschreiben: Canon ist gleich EF. Fujifilm hat mehrere. Eins davon ist die XF-Serie. Aber das ist einfach nur der Verschluss für das Objektiv, was dann hier hinkommt. Hier ist das Objektiv.'
-                    '[data/cropped/crop_0_camera-7.jpg]'
-                
+                    '# Text\n'
+                    'Das ist eine ZUsammenfassung der Vorlesung, die ich heute gehalten habe.\n'
+                    'Hier kommt die Zusammenfassung deiner Vorlesung/dokument. Beschreibe knapp, worum es geht.\n'
+                    '## Überschrift 1\n'
+                    'Hier kommt der Text zu Abschnitt 1. Das ist eine kurze Beschreibung des Abschnitts.\n'
+                    '## Überschrift 2\n'
+                    'Hier kommt der Text zu Abschnitt 2. Das ist eine kurze Beschreibung des Abschnitts.\n'
+                    '[data/cropped/image1.jpg]\n'
+                    '## Überschrift 3\n'
+                    'Hier kommt der Text zu Abschnitt 3. Das ist eine kurze Beschreibung des Abschnitts.\n'
+                    '[data/cropped/image2.jpg]\n'
+                    'Achte darauf, dass die Bilder an der Stelle bleiben, wo sie im Originaltext sind.\n'
                     )
                 },
                 {
                     'role': 'user',
                     'content': f"Hier ist der vollständige Transkripttext:\n\n{full_transcript_text}"
                 }
-            ]
+            ],
+            options={
+                "num_ctx": config.OLLAMA_NUM_CTX,
+            }
+    
+
         )
         if response and 'message' in response and 'content' in response['message']:
             script = response['message']['content'].strip()
             if script:
                 return script
-                # Zusätzliche Prüfung, ob der Abschnitt auch wirklich im Original vorkommt
-                # Dies kann Ollama-Halluzinationen oder kleine Abweichungen abfangen
+
             else:
                 print("Ollama hat einen leeren Abschnitt zurückgegeben.")
                 return None
