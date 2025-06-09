@@ -24,7 +24,10 @@ def lecture_fix(full_transcript_text: str) -> str | None:
                     'role': 'user',
                     'content': f"Hier ist der vollständige Transkripttext:\n\n{full_transcript_text}"
                 }
-            ]
+            ],
+                        options={
+                "num_ctx": config.OLLAMA_NUM_CTX,
+            }
         )
         if response and 'message' in response and 'content' in response['message']:
             fixed_transrcibt = response['message']['content'].strip()

@@ -30,7 +30,10 @@ def yolo_fix(image_path: str) -> bool | None:
                     'content': 'Here the image',
                     'images': [image_path]
                 },
-            ]
+            ],
+                        options={
+                "num_ctx": config.OLLAMA_NUM_CTX,
+            }
         )
         if response and 'message' in response and 'content' in response['message']:
             fixed_transrcibt = response['message']['content'].strip()

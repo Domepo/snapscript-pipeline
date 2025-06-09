@@ -1,17 +1,10 @@
 import ollama
 import config
 
-def transcript_to_script(transcript_path: str) -> str | None:
+def transcript_to_script(full_transcript_text: str) -> str | None:
     """
     Schreib das Transcript in ein Skript für Vorlesungsinhalte um.
     """
-    try:
-        with open(transcript_path, "r", encoding="utf-8") as f:
-            full_transcript_text = f.read()
-            print(full_transcript_text)
-    except FileNotFoundError:
-        print(f"WARNUNG: Transkriptdatei '{transcript_path}' nicht gefunden.")
-        return None
     
     print(f"Sende Anfrage an Ollama mit Modell {config.OLLAMA_MODEL} ...")
     try:
@@ -21,32 +14,45 @@ def transcript_to_script(transcript_path: str) -> str | None:
                 {
                     'role': 'system',
                     'content': (
-                    'Nimm das Transkript und schreibe es als Skript um, ohne den Inhalt zu verändern.'
-                    'Lass auf jeden Fall die Bilder an ihrer Stelle in der gleichen Formatierung.'
-                    'Unterteile den Text zusätzlich in Abschnitte und kennzeichne die Abschnittsüberschriften mit' 
-                    'einem ## (wie in Markdown). Und die Hauptüberschritt mit einem #'
-                    'Direkt unter der Hauptüberschrift soll eine kurze Zusammenfassung des Inhalts stehen.'
-                    'Schreibe die Textblöcke jewails immer in eine Zeile, ohne Zeilenumbrüche.'
-                    'Dann starte mit den Sektionen, hier ein Beispiel:\n\n'
-                    
-                    '# Text\n'
-                    'Das ist eine ZUsammenfassung der Vorlesung, die ich heute gehalten habe.\n'
-                    'Hier kommt die Zusammenfassung deiner Vorlesung/dokument. Beschreibe knapp, worum es geht.\n'
-                    '## Überschrift 1\n'
-                    'Hier kommt der Text zu Abschnitt 1. Das ist eine kurze Beschreibung des Abschnitts.\n'
-                    '## Überschrift 2\n'
-                    'Hier kommt der Text zu Abschnitt 2. Das ist eine kurze Beschreibung des Abschnitts.\n'
-                    '[data/cropped/image1.jpg]\n'
-                    '## Überschrift 3\n'
-                    'Hier kommt der Text zu Abschnitt 3. Das ist eine kurze Beschreibung des Abschnitts.\n'
-                    '[data/cropped/image2.jpg]\n'
-                    'Achte darauf, dass die Bilder an der Stelle bleiben, wo sie im Originaltext sind.\n'
+
+f"""
+"Du bist ein erfahrener Texter und Strukturierer von Transkripten. Deine Aufgabe ist es, ein langes Transkript in ein übersichtliches Format zu bringen, das eine kurze Zusammenfassung und detaillierte Abschnitte mit Überschriften enthält.
+Anweisungen:
+Zusammenfassung: Erstelle eine prägnante Zusammenfassung des Transkripts, die etwa 100 Wörter lang ist. Konzentriere dich auf die wichtigsten Punkte und Themen.
+Überschriften: Identifiziere logische Abschnitte im Transkript und erstelle aussagekräftige Überschriften für jeden Abschnitt. Die Überschriften sollen den Inhalt des jeweiligen Abschnitts klar widerspiegeln.
+Textbeibehaltung: Der ursprüngliche Text des Transkripts soll weitgehend unverändert bleiben. Nimm nur minimale Anpassungen vor, um die Lesbarkeit zu verbessern (z.B. Korrektur von Tippfehlern oder grammatikalischen Fehlern). Vermeide es, den Text zusammenzufassen oder zu kürzen. Schreibe die Abschnitte außerdem als Fließtext und vermeide Zeilenumbrüche innerhalb der Textblöcke.  Die Bilder im [] Format sollen an der Stelle bleiben, verändere diese nicht.
+Formatierung: Formatiere das Ergebnis wie folgt:
+# Titel
+
+Hier die Zusammenfassung, mache es 100 Wörter lang
+
+## Überschrift 1
+
+Hier kommt der Text zu Abschnitt 1. Hier kommt alles hin, nichts zusammenfassen!.
+[image/test1.jpg]
+
+##Überschrift 2
+
+[image/test2.jpg]
+Hier kommt der Text zu Abschnitt 2. Hier kommt alles hin, nichts zusammenfassen!.
+[image/test2.jpg]
+Hier kommt der Text zu Abschnitt 2.1. Hier kommt alles hin, nichts zusammenfassen!.
+
+
+##Überschrift 3
+
+Hier kommt der Text zu Abschnitt 3. Hier kommt alles hin, nichts zusammenfassen!.
+
+Transkript:
+[{full_transcript_text}]
+
+Wichtige Hinweise:
+Länge des Transkripts: Je länger das Transkript, desto mehr Überschriften werden wahrscheinlich benötigt.
+Logische Abschnitte: Achte darauf, dass die Überschriften die natürlichen Übergänge und Themenwechsel im Transkript widerspiegeln.
+Minimalinvasive Änderungen: Das Ziel ist es, das Transkript zu strukturieren, nicht zu verändern. 
+"""
                     )
                 },
-                {
-                    'role': 'user',
-                    'content': f"Hier ist der vollständige Transkripttext:\n\n{full_transcript_text}"
-                }
             ],
             options={
                 "num_ctx": config.OLLAMA_NUM_CTX,

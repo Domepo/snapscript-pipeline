@@ -89,6 +89,7 @@ def images_in_transcript(images_dir: str = "data/cropped", transcript:str = conf
     final_output = reconstruct_transcript_with_images(transcript_id)
     if final_output:
         print(final_output)
+        return final_output
     else:
         print("Konnte das Transkript nicht rekonstruieren.")
 

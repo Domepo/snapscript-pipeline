@@ -35,7 +35,9 @@ def get_relevant_section(image_path: str, full_transcript_text: str) -> str | No
                     'role': 'user',
                     'content': f"Hier ist der vollständige Transkripttext:\n\n{full_transcript_text}"
                 }
-            ]
+            ],            options={
+                "num_ctx": config.OLLAMA_NUM_CTX + 1000, #höherer Kontext für Bilder
+            }
         )
         if response and 'message' in response and 'content' in response['message']:
             relevant_section = response['message']['content'].strip()
