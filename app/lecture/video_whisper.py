@@ -1,5 +1,6 @@
 from services.ollama_fix_lecture_service import lecture_fix
 import whisper
+from whisper.utils import get_writer
 import config
 import re
 
@@ -11,6 +12,9 @@ def video_transcript(video_path:str, output_path:str = config.TRANSCRIPT_PATH) -
 
     # Video transkribieren
     result = model.transcribe(video_path)
+
+    srt_writer = get_writer("srt", "data/videos")
+    srt_writer(result, "text.srt")
 
     raw_text = result["text"]
 
