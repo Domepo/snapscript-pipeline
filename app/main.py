@@ -16,10 +16,10 @@ if __name__ == "__main__":
     print("Starte den Prozess...")
     init_db()
 
-    script = generate_transcript("data/videos/audiotest.mp3")
-    transcript_id = store_transcript(script, config.TRANSCRIPT_PATH)
+    # script = generate_transcript("data/videos/Astroshort.mp4")
+    # transcript_id = store_transcript(script, config.TRANSCRIPT_PATH)
 
-    # compare_image_text_timestamp("data/cropped/", transcript_id)
+    compare_image_text_timestamp("data/tmp/", 5)
     """
     Change token count to run the model faster.
     """

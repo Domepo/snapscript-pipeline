@@ -34,8 +34,34 @@ def reconstruct_transcript_with_images(transcript_id: int) -> str | None:
     parts.append(full_text[:last_offset])
     return "".join(reversed(parts))
 
-def compare_image_text_timestamp(image_path: str, transcript_id) -> str | None:
-    print(get_timestamps(transcript_id))
+def compare_image_text_timestamp(images_path: str, transcript_id) -> str | None:
+    # Hole die Zeitstempel-Intervalle
+    intervals = get_timestamps(transcript_id)
+
+    # Gehe alle Bilder im Verzeichnis durch
+    for image_file in os.listdir(images_path):
+        # Prüfe ob es sich um eine Bilddatei handelt (optional, z.B. nur .jpg/.png)
+        if not image_file.lower().endswith(('.png', '.jpg', '.jpeg')):
+            continue
+ 
+        # Entferne Dateiendung und wandle in int um
+        timestamp = int(os.path.splitext(image_file)[0])
+        print(f"Bild: {image_file}, Timestamp: {timestamp}")
+
+        # Vergleiche den Timestamp mit den Intervallen
+        for idx, interval in  enumerate(intervals):
+            if intervals[idx] == intervals[-1]:
+                break
+            start = int(intervals[idx]['start_timestamp'])
+            end = int(intervals[idx+1]['start_timestamp'])
+
+            if start <= timestamp <= end:
+                print(f"--> Bild {image_file} liegt im Intervall {start}-{end}")
+                break
+
+
+    # Kein passendes Bild gefunden
+    return None
 
 def images_in_transcript(images_dir: str = "data/cropped", transcript:str = config.FULL_TRANSCRIPT_TEXT) -> None:
     """
