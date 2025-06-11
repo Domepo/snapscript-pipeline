@@ -57,6 +57,7 @@ def compare_image_text_timestamp(images_path: str, transcript_id) -> str | None:
 
             if start <= timestamp <= end:
                 print(f"--> Bild {image_file} liegt im Intervall {start}-{end}")
+                print(intervals[idx]['line_text'])
                 break
 
 

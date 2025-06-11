@@ -6,10 +6,11 @@ def get_timestamps(transcript_id: int) -> list:
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT start_timestamp, end_timestamp
+        SELECT start_timestamp, end_timestamp, line_text
         FROM transcript_lines
         WHERE transcript_id = ?
     ''', (transcript_id,))
-    timestamps = [{"start_timestamp": row[0], "end_timestamp": row[1]} for row in cursor.fetchall()]
+    timestamps = [{"start_timestamp": row[0], "end_timestamp": row[1], "line_text" : row[2]} for row in cursor.fetchall()]
     conn.close()
     return timestamps
+
