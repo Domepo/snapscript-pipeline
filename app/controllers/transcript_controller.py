@@ -4,6 +4,7 @@ from models.transcript import get_transcript_by_id
 from models.image_marker import get_image_markers_for_transcript
 from models.database import init_db
 from models.transcript import add_transcript
+from models.transcript_timestamp import get_timestamps
 from models.image_marker import add_image_marker
 from services.ollama_service import get_relevant_section
 from utils.text_utils import find_section_end_offset 
@@ -33,12 +34,13 @@ def reconstruct_transcript_with_images(transcript_id: int) -> str | None:
     parts.append(full_text[:last_offset])
     return "".join(reversed(parts))
 
+def compare_image_text_timestamp(image_path: str, transcript_id) -> str | None:
+    print(get_timestamps(transcript_id))
+
 def images_in_transcript(images_dir: str = "data/cropped", transcript:str = config.FULL_TRANSCRIPT_TEXT) -> None:
     """
     Hauptfunktion, die den gesamten Prozess der Bildverarbeitung und Transkript-Rekonstruktion steuert.
     """ 
-
-    init_db()
    
 
     full_transcript_text = transcript

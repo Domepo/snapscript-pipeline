@@ -182,6 +182,7 @@ data/cropped_failed/*
 data/pdf/*
 data/videos/*
 data/transcript/*
+data/tmp/*
 
 # PyPI configuration file
 .pypirc
