@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
 
 
-    extract_frames_rename_by_timestamp("data/videos/Astro.mp4", "data/tmp")
+    extract_frames_rename_by_timestamp("data/videos/Astroshort.mp4", "data/tmp")
 
     # get_crop_image("data/tmp", "data/cropped", "data/cropped_failed")
 

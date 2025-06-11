@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime
 from utils.image_distance import compare_successive_images
 from utils.compare_images import all_pixels_of_A_in_B
 import cv2
@@ -8,13 +8,11 @@ from PIL import Image
 
 def get_image_edges(img: Image.Image):
     """
-    Berechnet die Kan
+    Berechnet die Anzahl an Kanten im Bild.
     """
-
     img_gray = np.array(img.convert("L"))
     edges = cv2.Canny(img_gray, 100, 200)
     num_edges = np.sum(edges > 0)
-
     return num_edges
 
 def extract_frames_rename_by_timestamp(
@@ -25,19 +23,17 @@ def extract_frames_rename_by_timestamp(
     recording_start: datetime | None = None # absoluter Startzeitpunkt
 ) -> None:
     """
-    Liest ein Video frame-weise ein, speichert jedes Bild und benennt es nach
-    seinem absoluten Timestamp (recording_start + Frame-Offset).
-
-    Falls recording_start=None, wird der Zeitpunkt des Aufrufs verwendet.
+    Liest ein Video frame-weise ein, speichert Bilder, die sich deutlich vom vorherigen unterscheiden,
+    und benennt sie nach Timestamp. Bilder werden zunächst gesammelt und am Ende auf Dopplungen geprüft.
     """
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         raise RuntimeError(f"Konnte Video '{video_path}' nicht öffnen.")
 
     fps = cap.get(cv2.CAP_PROP_FPS)
+        
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    # Falls kein expliziter Start übergeben wurde → jetzt
     if recording_start is None:
         recording_start = datetime.now().replace(microsecond=0)
 
@@ -45,15 +41,18 @@ def extract_frames_rename_by_timestamp(
     out_path.mkdir(parents=True, exist_ok=True)
 
     previous_img = None
-    image_counter = 0
 
+    # Hier sammeln wir die Kandidatenbilder
+    candidate_images = []
+    candidate_filenames = []
+
+    print("Phase 1: Kandidatenbilder aus Video extrahieren...")
     for idx in range(total_frames):
         ok, frame_bgr = cap.read()
         if not ok:
             break
 
-
-        elapsed_ms = int((idx / fps) * 1000)   # 6 700 ms → 0000006700
+        elapsed_ms = int((idx / fps) * 1000)
         ts_str = f"{elapsed_ms:010d}"
         file_name = out_path / f"{ts_str}.{image_format}"
 
@@ -62,50 +61,82 @@ def extract_frames_rename_by_timestamp(
         if previous_img is None:
             previous_img = img
             continue 
-            
-        """
-        Berechnet den Unterschied zwischen zwei aufeinanderfolgenden Bildern mit hashing.
-        Beispielaufruf:
-        """
+
         image_difference = compare_successive_images(previous_img, img)
-        
 
-        if  image_difference > 25 and get_image_edges(previous_img) > 5000:
-            print(f"Unterschied erkannt zwischen {previous_img} und {file_name} ist {image_difference}.")
+        # Wir speichern das Bild *vor* der Änderung als Kandidat.
+        # Das ist stabiler, da das Änderungs-Frame selbst oft Bewegungsunschärfe hat.
+        if image_difference > 25 and get_image_edges(previous_img) > 5000:
+            print(f"Änderung nach Frame {idx-1} erkannt. Füge Kandidat hinzu.")
             
-            FORMAT_MAP = {
-            "jpg":  "JPEG",
-            "jpeg": "JPEG",
-            "png":  "PNG",
-            "tif":  "TIFF",
-            }
+            # Wichtig: Speichere das *vorherige* Bild mit dem *vorherigen* Dateinamen
+            prev_elapsed_ms = int(((idx - 1) / fps) * 1000)
+            prev_ts_str = f"{prev_elapsed_ms:010d}"
+            prev_file_name = out_path / f"{prev_ts_str}.{image_format}"
 
-
-            """
-            Prüft ob ein Bild in dem anderen enthalten ist.
-            Wenn ja, wird das Bild nicht gespeichert.
-            """
-            image_contains_same_iamge = all_pixels_of_A_in_B(previous_img,img)
-            
-            print(image_contains_same_iamge)
-            if image_contains_same_iamge:
-                print(f"Bild {file_name} ist ein Teil von {previous_img}. Überspringe Speicherung.")
-                continue
-            else:
-                print("Das ist ein TEst")
-            """
-            Speichert nicht das erste Bild
-            """
-            print(image_counter)
-            pillow_fmt = FORMAT_MAP[image_format.lower()]
-            previous_img.save(file_name, format=pillow_fmt, quality=95)
-
+            candidate_images.append(previous_img.copy())  # .copy() ist hier entscheidend!
+            candidate_filenames.append(prev_file_name)
 
         previous_img = img
-        
 
     cap.release()
-    print("Fertig – alle Frames wurden gespeichert.")
+    print(f"Phase 1 abgeschlossen. {len(candidate_images)} Kandidaten gefunden.")
 
+    # --- KORRIGIERTER TEIL ---
+    print("\nPhase 2: Dopplungen prüfen und finale Bilder speichern...")
 
+    if not candidate_images:
+        print("Keine relevanten Bilder zum Speichern gefunden.")
+        return
 
+    FORMAT_MAP = {
+        "jpg":  "JPEG", "jpeg": "JPEG",
+        "png":  "PNG",  "tif":  "TIFF",
+    }
+    pillow_fmt = FORMAT_MAP.get(image_format.lower(), "JPEG")
+    
+    # Wir erstellen eine neue Liste mit den Bildern, die wir wirklich behalten wollen.
+    final_images_to_save = []
+    
+    # Das erste Bild der Kandidatenliste wird immer behalten.
+    last_kept_image = candidate_images[0]
+    final_images_to_save.append((candidate_filenames[0], last_kept_image))
+
+    # Gehe durch die restlichen Kandidaten und vergleiche sie mit dem letzten Bild, das wir behalten haben.
+    for i in range(1, len(candidate_images)):
+        current_img = candidate_images[i]
+        current_filename = candidate_filenames[i]
+
+        # Prüfe, ob das aktuelle Bild eine exakte Kopie/Teilmenge des letzten behaltenen Bildes ist.
+        # Deine Funktion prüft, ob A in B enthalten ist. Wir wollen also prüfen:
+        # Ist das `current_img` im `last_kept_image` enthalten? (z.B. ein Menü verschwindet)
+        # Oder ist das `last_kept_image` im `current_img` enthalten? (z.B. ein Menü erscheint)
+        # Wenn beides nicht der Fall ist, ist es ein wirklich neues Bild.
+        if all_pixels_of_A_in_B(current_img, last_kept_image) or all_pixels_of_A_in_B(last_kept_image, current_img):
+            #Bild data\tmp\0000197166.jpg ist ein Duplikat/Teilbild von 0000059166.jpg. Überspringe.
+            print(f"Bild {current_filename} ist ein Duplikat/Teilbild von {final_images_to_save[-1][0].name}.")
+            final_images_to_save.pop(-1)
+            final_images_to_save.append((current_filename, current_img))
+            print("-> Vorheriges wird nicht gespeichert, da es ein Duplikat ist.")
+            
+        else:
+            # Kein Duplikat -> behalten und als neue Referenz setzen.
+            print(f"Bild {current_filename.name} ist neu. Wird behalten.")
+            last_kept_image = current_img
+            final_images_to_save.append((current_filename, current_img))
+
+    # Speichere alle Bilder, die wir am Ende behalten wollen.
+
+    """
+    Wir entfernen das allererste Bild, da es immer das erste Bild des Videos ist
+    und in der Regel kein relevantes Bild darstellt (z.B. schwarzer Bildschirm, Intro).
+    """
+    print(f"Entferne erstes Bild {final_images_to_save[0][0].name} aus der Liste, da es das erste Video-Bild ist.")
+    final_images_to_save.pop(0) 
+
+    print(f"\nSpeichere {len(final_images_to_save)} finale Bilder...")
+    for filename, image in final_images_to_save:
+        image.save(filename, format=pillow_fmt, quality=95)
+        print(f"-> {filename} gespeichert.")
+
+    print("Fertig – alle relevanten Frames wurden gespeichert.")

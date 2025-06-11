@@ -46,7 +46,3 @@ def all_pixels_of_A_in_B(image1_pil,
     max_diff = diff_masked.max()
     return max_diff <= tolerance
 
-print(all_pixels_of_A_in_B(
-    image1_pil=Image.open("data/tmp/0000059200.jpg").convert("RGB"),
-    image2_pil=Image.open("data/tmp/0000197200.jpg").convert("RGB")
-))
