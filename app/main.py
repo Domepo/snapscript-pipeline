@@ -16,8 +16,8 @@ if __name__ == "__main__":
     print("Starte den Prozess...")
     init_db()
 
-    # script = generate_transcript("data/videos/audiotest.mp3")
-    # transcript_id = store_transcript(script, config.TRANSCRIPT_PATH)
+    script = generate_transcript("data/videos/audiotest.mp3")
+    transcript_id = store_transcript(script, config.TRANSCRIPT_PATH)
 
     # compare_image_text_timestamp("data/cropped/", transcript_id)
     """
@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
 
 
-    extract_frames_rename_by_timestamp("data/videos/Astroshort.mp4", "data/tmp")
+    # extract_frames_rename_by_timestamp("data/videos/Astro.mp4", "data/tmp")
 
     # get_crop_image("data/tmp", "data/cropped", "data/cropped_failed")
 

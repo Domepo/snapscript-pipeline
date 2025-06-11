@@ -7,6 +7,18 @@ from services.ollama_fix_lecture_service import lecture_fix
 from models.database import init_db
 from models.database import get_connection
 
+def timestamp_to_milliseconds(ts: str) -> int:
+    """Konvertiert Timestamp 'HH:MM:SS,mmm' in Millisekunden."""
+    h, m, s_ms = ts.split(":")
+    s, ms = s_ms.split(",")
+    total_ms = (
+        int(h) * 3600 * 1000 +
+        int(m) * 60 * 1000 +
+        int(s) * 1000 +
+        int(ms)
+    )
+    return total_ms
+
 def generate_transcript(video_path:str) -> dict:
     """
     Transkribiert Video und schreibt SRT. Gibt Transkript-Resultat zurück.
@@ -62,8 +74,11 @@ def store_transcript(result: dict, output_path:str = config.TRANSCRIPT_PATH) -> 
             timestamp_line = lines[0] if "-->" in lines[0] else lines[1]
             match = re.match(r'(\d{2}:\d{2}:\d{2},\d{3})\s+-->\s+(\d{2}:\d{2}:\d{2},\d{3})', timestamp_line)
             if match:
-                start_timestamp = match.group(1).replace(":", "").replace(",", "")
-                end_timestamp = match.group(2).replace(":", "").replace(",", "")
+                start_timestamp = match.group(1)
+                end_timestamp = match.group(2)
+
+                start_ms = timestamp_to_milliseconds(start_timestamp)
+                end_ms = timestamp_to_milliseconds(end_timestamp)
 
                 # Zeilentext zusammenbauen
                 line_text = ' '.join(lines[1:]) if "-->" in lines[0] else ' '.join(lines[2:])
@@ -72,7 +87,7 @@ def store_transcript(result: dict, output_path:str = config.TRANSCRIPT_PATH) -> 
                 cursor.execute('''
                     INSERT INTO transcript_lines (transcript_id, start_timestamp, end_timestamp, line_text)
                     VALUES (?, ?, ?, ?)
-                ''', (transcript_id, start_timestamp, end_timestamp, line_text.strip()))
+                ''', (transcript_id, start_ms, end_ms, line_text.strip()))
 
     # Finalize
     conn.commit()
