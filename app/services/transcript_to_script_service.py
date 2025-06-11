@@ -50,6 +50,7 @@ Wichtige Hinweise:
 Länge des Transkripts: Je länger das Transkript, desto mehr Überschriften werden wahrscheinlich benötigt.
 Logische Abschnitte: Achte darauf, dass die Überschriften die natürlichen Übergänge und Themenwechsel im Transkript widerspiegeln.
 Minimalinvasive Änderungen: Das Ziel ist es, das Transkript zu strukturieren, nicht zu verändern. 
+Achte auf den Fließtext und vermeide unnötige Zeilenumbrüche.
 """
                     )
                 },

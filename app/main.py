@@ -16,32 +16,26 @@ if __name__ == "__main__":
     print("Starte den Prozess...")
     init_db()
 
-    # script = generate_transcript("data/videos/Astroshort.mp4")
-    # transcript_id = store_transcript(script, config.TRANSCRIPT_PATH)
+    script = generate_transcript("data/videos/Astro.mp4")
+    transcript_id = store_transcript(script, config.TRANSCRIPT_PATH)
 
-    compare_image_text_timestamp("data/tmp/", 5)
+    extract_frames_rename_by_timestamp("data/videos/Astro.mp4", "data/tmp")
+
     """
     Change token count to run the model faster.
     """
-    # config.OLLAMA_NUM_CTX = count_tokens(config.FULL_TRANSCRIPT_TEXT)
+    config.OLLAMA_NUM_CTX = count_tokens(config.FULL_TRANSCRIPT_TEXT)
 
 
-
-    # extract_frames_rename_by_timestamp("data/videos/Astro.mp4", "data/tmp")
-
-    # get_crop_image("data/tmp", "data/cropped", "data/cropped_failed")
+    get_crop_image("data/tmp", "data/cropped", "data/cropped_failed")
+    script_with_images = compare_image_text_timestamp("data/cropped", transcript_id)
 
     # script_with_images = images_in_transcript("data/cropped", config.FULL_TRANSCRIPT_TEXT)
 
+    script = transcript_to_script(script_with_images)
+    config.OLLAMA_NUM_CTX = count_tokens(script)
 
-
-
-
-
-    # script = transcript_to_script(script_with_images)
-    # config.OLLAMA_NUM_CTX = count_tokens(script)
-
-    # print(script)
-    # keywords = create_keywords(script)
-    # print(keywords)
-    # create_typst_document(script, keywords)
+    print(script)
+    keywords = create_keywords(script)
+    print(keywords)
+    create_typst_document(script, keywords)
