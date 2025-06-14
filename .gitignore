@@ -183,7 +183,7 @@ data/pdf/*
 data/videos/*
 data/transcript/*
 data/tmp/*
-
+logs/
 # PyPI configuration file
 .pypirc
 

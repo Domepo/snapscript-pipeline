@@ -20,6 +20,10 @@ def get_crop_image(image_folder:str = "data/lecture_images",  output_folder:str 
     os.makedirs(cropped_fail_folder, exist_ok=True)
 
     for file in os.listdir(image_folder):
+
+        base, ext = os.path.splitext(file)  
+        file_number = int(base) 
+
         if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
             continue
 
@@ -59,7 +63,7 @@ def get_crop_image(image_folder:str = "data/lecture_images",  output_folder:str 
             x1, y1, x2, y2 = map(int, box)
             crop = img[y1:y2, x1:x2]
 
-            out_path = os.path.join(output_folder, f"crop_{idx}_{file}")
+            out_path = os.path.join(output_folder, f"{file_number+idx}{ext}")
             cv2.imwrite(out_path, crop)
             print(f"Gespeichert: {out_path}")
 

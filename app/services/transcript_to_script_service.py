@@ -1,6 +1,7 @@
 import ollama
 import config
-
+from utils.measure_time import measure_time
+@measure_time
 def transcript_to_script(full_transcript_text: str) -> str | None:
     """
     Schreib das Transcript in ein Skript für Vorlesungsinhalte um.

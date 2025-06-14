@@ -112,6 +112,7 @@ def extract_frames_rename_by_timestamp(
         # Ist das `current_img` im `last_kept_image` enthalten? (z.B. ein Menü verschwindet)
         # Oder ist das `last_kept_image` im `current_img` enthalten? (z.B. ein Menü erscheint)
         # Wenn beides nicht der Fall ist, ist es ein wirklich neues Bild.
+
         if all_pixels_of_A_in_B(current_img, last_kept_image) or all_pixels_of_A_in_B(last_kept_image, current_img):
             #Bild data\tmp\0000197166.jpg ist ein Duplikat/Teilbild von 0000059166.jpg. Überspringe.
             print(f"Bild {current_filename} ist ein Duplikat/Teilbild von {final_images_to_save[-1][0].name}.")

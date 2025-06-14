@@ -6,6 +6,7 @@ from services.typst.builders import (
     build_section,
     build_sys_inputs
 )
+from utils.measure_time import measure_time
 from services.typst.compiler import compile_document
 import typst 
 import datetime
@@ -198,6 +199,7 @@ def parse_markdown_to_document_parts(markdown_text: str):
 # # """
 
 
+@measure_time
 def create_typst_document(markdown_input: str,  keywords_str: str):
     # === 1. Metadaten definieren (bleibt meist manuell) ===
     first_person_dict = build_first_person(

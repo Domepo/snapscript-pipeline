@@ -10,7 +10,7 @@ from models.transcript_timestamp import get_timestamps
 from models.image_marker import add_image_marker
 from services.ollama_service import get_relevant_section
 from utils.text_utils import find_section_end_offset 
-
+from utils.measure_time import measure_time
 
 def reconstruct_transcript_with_images(transcript_id: int) -> str | None:
     full_text = get_transcript_by_id(transcript_id)
@@ -36,7 +36,8 @@ def reconstruct_transcript_with_images(transcript_id: int) -> str | None:
     parts.append(full_text[:last_offset])
     return "".join(reversed(parts))
 
-def compare_image_text_timestamp(images_path: str, transcript_id: str) -> str:
+@measure_time
+def compare_image_text_timestamp(images_path: str, transcript_id: str,  transcript_with_image_path:str = "data/transcript/transcript_with_images.txt") -> str:
     """
     Kombiniert ein Text-Transkript mit Bildern aus einem Verzeichnis basierend auf Zeitstempeln.
 
@@ -56,35 +57,44 @@ def compare_image_text_timestamp(images_path: str, transcript_id: str) -> str:
 
     # 2. BILDER VERARBEITEN: Ordne jedes Bild dem richtigen Text-Intervall zu
     print(f"\nDurchsuche Bilder im Verzeichnis: {images_path}")
-    for image_file in os.listdir(images_path):
+
+    # Sortiere die Bilder nach Dateinamen, die als Zeitstempel fungieren
+    all_images = [f for f in os.listdir(images_path) if f.lower().endswith(('.png','.jpg','.jpeg'))]
+
+    all_images_sorted = sorted(
+        all_images,
+        key=lambda fn: int(os.path.splitext(fn)[0])  # Dateiname ohne Extension → int
+    )
+
+
+    for image_file in all_images_sorted:
         # Prüfe, ob es sich um eine Bilddatei handelt
         if not image_file.lower().endswith(('.png', '.jpg', '.jpeg')):
             continue
+    
+        # Extrahiere den Zeitstempel aus dem Dateinamen
+        base, ext = os.path.splitext(image_file)
+        timestamp = int(base) 
 
-        try:
-            # Extrahiere den Zeitstempel aus dem Dateinamen
-            timestamp = int(os.path.splitext(image_file)[0])
-            full_image_path = os.path.join(images_path, image_file)
 
-            # Finde das passende Intervall für das Bild
-            for idx, interval in enumerate(intervals):
-                start = int(interval['start_timestamp'])
-                
-                # Bestimme das Ende des Intervalls. Für das letzte Intervall ist das Ende "unendlich".
-                # Die Zeit des Bildes muss >= start und < dem start des nächsten Intervalls sein.
-                end = float('inf')
-                if idx + 1 < len(intervals):
-                    end = int(intervals[idx + 1]['start_timestamp'])
+        full_image_path = os.path.join(images_path, image_file)
 
-                if start <= timestamp < end:
-                    print(f"  [Match] Bild '{image_file}' (Timestamp: {timestamp}) gehört zu Intervall {idx} ({start}-{end})")
-                    images_for_interval[idx].append(full_image_path)
-                    # Da jedes Bild nur zu einem Intervall gehören kann, können wir die innere Schleife abbrechen.
-                    break 
-        except ValueError:
-            # Ignoriere Dateien, deren Namen keine Zahlen sind (z.B. ".DS_Store")
-            print(f"  [Warnung] Konnte Timestamp aus '{image_file}' nicht extrahieren. Überspringe.")
-            continue
+        # Finde das passende Intervall für das Bild
+        for idx, interval in enumerate(intervals):
+            start = int(interval['start_timestamp'])
+            
+            # Bestimme das Ende des Intervalls. Für das letzte Intervall ist das Ende "unendlich".
+            # Die Zeit des Bildes muss >= start und < dem start des nächsten Intervalls sein.
+            end = float('inf')
+            if idx + 1 < len(intervals):
+                end = int(intervals[idx + 1]['start_timestamp'])
+
+            if start <= timestamp < end:
+                print(f"  [Match] Bild '{image_file}' (Timestamp: {timestamp}) gehört zu Intervall {idx} ({start}-{end})")
+                images_for_interval[idx].append(full_image_path)
+                # Da jedes Bild nur zu einem Intervall gehören kann, können wir die innere Schleife abbrechen.
+                break 
+
             
     # 3. TEXT ERSTELLEN: Baue den finalen Output zusammen
     print("\nErstelle den finalen Text...")
@@ -92,15 +102,20 @@ def compare_image_text_timestamp(images_path: str, transcript_id: str) -> str:
     for idx, interval in enumerate(intervals):
         # Füge die Textzeile hinzu
         output_lines.append(interval['line_text'])
-
         # Prüfe, ob es für dieses Intervall zugeordnete Bilder gibt
         if idx in images_for_interval:
             # Füge alle gefundenen Bilder hinzu, formatiert zur besseren Lesbarkeit
             for image_path in images_for_interval[idx]:
-                output_lines.append(f"[{image_path}]")
+                posix_path = image_path.replace(os.path.sep, "/")
+                output_lines.append(f"[{posix_path}]")
 
     # Verbinde alle Zeilen zu einem einzigen String
+    # print("\n".join(output_lines))
+    with open(transcript_with_image_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(output_lines))
 
+    print("Fertig – siehe transcript_with_images.txt")
+    print(f"Anzahl Zeilen in output_lines: {len(output_lines)}")
     return "\n".join(output_lines)
 
 def images_in_transcript(images_dir: str = "data/cropped", transcript:str = config.FULL_TRANSCRIPT_TEXT) -> None:

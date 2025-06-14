@@ -1,6 +1,7 @@
 import ollama
 import config
-
+from utils.measure_time import measure_time
+@measure_time
 def create_keywords(full_transcript_text: str) -> str | None:
     """
     Erstellt 5-10 Keywords aus dem Transkripttext.

@@ -45,4 +45,6 @@ def all_pixels_of_A_in_B(image1_pil,
 
     max_diff = diff_masked.max()
     return max_diff <= tolerance
-
+img_a = cv2.imread("data/tmp/0000438766.jpg", cv2.IMREAD_COLOR)
+img_b = cv2.imread("data/tmp/0000527366.jpg", cv2.IMREAD_COLOR)
+all_pixels_of_A_in_B(img_a, img_b, bg_threshold=250, tolerance=30)
