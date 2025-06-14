@@ -7,7 +7,7 @@ def count_tokens(text:str, enc_name="o200k_base", thresh=2):
     Args:
         text (str): The input text to be tokenized and counted.
         enc_name (str, optional): The name of the encoding to use. Defaults to "o200k_base".
-        thresh (float, optional): A multiplier applied to the token count. Defaults to 1.2.
+        thresh (float, optional): A multiplier applied to the token count. Defaults to 2.
 
     Returns:
         int: The rounded token count after applying the threshold multiplier.

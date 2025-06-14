@@ -31,7 +31,7 @@
   // #c.content
   for content in section.content {
     if content.type == "image" {
-      [#figure(image(content.path,width: content.width * 100%), caption: [#content.caption])]
+      [#figure(image(content.path,width: content.width * 100%), caption: [#section.name])]
     }
     if content.type == "text" {
       [#content.value]
