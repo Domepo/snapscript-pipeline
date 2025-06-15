@@ -11,7 +11,8 @@ from models.database import init_db
 from utils.token_count import count_tokens
 from utils.video_to_image_timestamp import extract_frames_rename_by_timestamp
 from utils.clean_temp_data import clean_temp_data_files_only
-import streamlit.components.v1 as components
+import torch
+torch.classes.__path__ = []
 
 os.environ["STREAMLIT_WATCHER_TYPE"] = "none"
 
