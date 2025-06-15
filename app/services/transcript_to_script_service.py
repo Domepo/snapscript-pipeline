@@ -159,11 +159,11 @@ def transcript_to_script_iterative(full_transcript_text: str, output_filename: s
     final_script = f"{header_part}\n\n{structured_content}"
 
 
-    try:
-        with open(output_filename, 'w', encoding='utf-8') as f:
-            f.write(final_script)
-        print(f"\n✅ Skript erfolgreich in die Datei '{output_filename}' geschrieben.")
-        print(f"   Pfad: {os.path.abspath(output_filename)}")
-    except IOError as e:
-        print(f"\n❌ Fehler beim Schreiben der Datei: {e}")
+    # try:
+    #     with open(output_filename, 'w', encoding='utf-8') as f:
+    #         f.write(final_script)
+    #     print(f"\n✅ Skript erfolgreich in die Datei '{output_filename}' geschrieben.")
+    #     print(f"   Pfad: {os.path.abspath(output_filename)}")
+    # except IOError as e:
+    #     print(f"\n❌ Fehler beim Schreiben der Datei: {e}")
     return final_script
