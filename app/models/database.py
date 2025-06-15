@@ -36,6 +36,18 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_image_markers_transcript_id
         ON image_markers (transcript_id)
     ''')
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS transcript_lines (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            transcript_id INTEGER NOT NULL,
+            start_timestamp TEXT NOT NULL,
+            end_timestamp TEXT NOT NULL,
+            line_text TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (transcript_id) REFERENCES transcripts (id)
+        )
+    ''')
     conn.commit()
     conn.close()
     print(f"Datenbank '{config.DB_NAME}' initialisiert und Tabellen 'transcripts' & 'image_markers' sichergestellt.")

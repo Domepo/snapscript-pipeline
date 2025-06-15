@@ -31,14 +31,14 @@
   // #c.content
   for content in section.content {
     if content.type == "image" {
-      [#figure(image(content.path,width: content.width * 100%), caption: [#content.caption])]
+      [#figure(image(content.path,width: content.width * 100%), caption: [#section.name])]
     }
     if content.type == "text" {
       [#content.value]
     }
   }
 }
-TEST
+
 // #figure(image("/data/cropped/crop_0_camera-4.jpg"), caption: [Schematische Darstellung der Livestream-Ebenen])
 
 

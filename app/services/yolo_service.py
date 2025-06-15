@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 from services.ollama_fix_yolo_service import yolo_fix
+from utils.validate_crop_image import is_empty_or_two_tone
 import os
 import config
 import cv2
@@ -10,7 +11,7 @@ def box_inside(box_a, box_b):
     xb1, yb1, xb2, yb2 = box_b
     return xa1 >= xb1 and ya1 >= yb1 and xa2 <= xb2 and ya2 <= yb2
 
-def get_crop_image(image_folder:str = "data/lecture_images",  output_folder:str = "data/cropped", cropped_fail_folder:str = "data/cropped_failed") -> None: 
+def get_crop_image(image_folder:str = "data/tmp",  output_folder:str = "data/cropped", cropped_fail_folder:str = "data/cropped_failed") -> None: 
     # Modell laden
     model = YOLO(config.YOLO_MODELL)
 
@@ -20,6 +21,10 @@ def get_crop_image(image_folder:str = "data/lecture_images",  output_folder:str 
     os.makedirs(cropped_fail_folder, exist_ok=True)
 
     for file in os.listdir(image_folder):
+
+        base, ext = os.path.splitext(file)  
+        file_number = int(base) 
+
         if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
             continue
 
@@ -59,15 +64,21 @@ def get_crop_image(image_folder:str = "data/lecture_images",  output_folder:str 
             x1, y1, x2, y2 = map(int, box)
             crop = img[y1:y2, x1:x2]
 
-            out_path = os.path.join(output_folder, f"crop_{idx}_{file}")
+            out_path = os.path.join(output_folder, f"{file_number+idx}{ext}")
             cv2.imwrite(out_path, crop)
             print(f"Gespeichert: {out_path}")
 
-            saved_crops.append((out_path, f"FAILED_crop_{idx}_{file}"))
+            saved_crops.append((out_path, f"FAILED_crop_{file_number+idx}{ext}"))
 
     # Schritt 2: Prüfen & ggf. verschieben
     for original_path, failed_filename in saved_crops:
-        if not yolo_fix(original_path):
+
+        validate_image = is_empty_or_two_tone(original_path,
+                            var_thresh=5.0,
+                            lap_var_thresh=50.0,
+                            unique_gray_thresh=3)
+        
+        if not yolo_fix(original_path) or validate_image:
             failed_path = os.path.join(cropped_fail_folder, failed_filename)
             os.rename(original_path, failed_path)
             print(f"❌ Verschoben nach: {failed_path}")
