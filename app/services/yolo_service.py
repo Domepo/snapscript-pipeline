@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 from services.ollama_fix_yolo_service import yolo_fix
+from utils.validate_crop_image import is_empty_or_two_tone
 import os
 import config
 import cv2
@@ -67,11 +68,17 @@ def get_crop_image(image_folder:str = "data/tmp",  output_folder:str = "data/cro
             cv2.imwrite(out_path, crop)
             print(f"Gespeichert: {out_path}")
 
-            saved_crops.append((out_path, f"FAILED_crop_{idx}_{file}"))
+            saved_crops.append((out_path, f"FAILED_crop_{file_number+idx}{ext}"))
 
     # Schritt 2: Prüfen & ggf. verschieben
     for original_path, failed_filename in saved_crops:
-        if not yolo_fix(original_path):
+
+        validate_image = is_empty_or_two_tone(original_path,
+                            var_thresh=5.0,
+                            lap_var_thresh=50.0,
+                            unique_gray_thresh=3)
+        
+        if not yolo_fix(original_path) or validate_image:
             failed_path = os.path.join(cropped_fail_folder, failed_filename)
             os.rename(original_path, failed_path)
             print(f"❌ Verschoben nach: {failed_path}")

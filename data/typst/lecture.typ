@@ -38,7 +38,7 @@
     }
   }
 }
-TEST
+
 // #figure(image("/data/cropped/crop_0_camera-4.jpg"), caption: [Schematische Darstellung der Livestream-Ebenen])
 
 
