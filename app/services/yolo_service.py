@@ -10,7 +10,7 @@ def box_inside(box_a, box_b):
     xb1, yb1, xb2, yb2 = box_b
     return xa1 >= xb1 and ya1 >= yb1 and xa2 <= xb2 and ya2 <= yb2
 
-def get_crop_image(image_folder:str = "data/lecture_images",  output_folder:str = "data/cropped", cropped_fail_folder:str = "data/cropped_failed") -> None: 
+def get_crop_image(image_folder:str = "data/tmp",  output_folder:str = "data/cropped", cropped_fail_folder:str = "data/cropped_failed") -> None: 
     # Modell laden
     model = YOLO(config.YOLO_MODELL)
 

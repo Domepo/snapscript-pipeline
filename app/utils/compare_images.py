@@ -21,8 +21,8 @@ def all_pixels_of_A_in_B(image1_pil: Image.Image,
     Vergleicht alle nicht-weißen Pixel in image1_pil mit den entsprechenden
     Pixeln in image2_pil.
 
-    :param image1_pil: PIL-Image mit Inhalt („Tinte").
-    :param image2_pil: PIL-Image als Referenz.
+    :param image1_pil: PIL-Image mit Inhalt („Tinte"). / Vergleichsbild
+    :param image2_pil: PIL-Image als Referenz. /  Orignal Bild 
     :param bg_threshold: Grauwert (0–255) ab dem ein Pixel als weiß gilt.
     :param tolerance: maximale Differenz pro Farbkanal (0–255).
                        Wenn None, wird automatisch basierend auf dem
@@ -54,10 +54,10 @@ def all_pixels_of_A_in_B(image1_pil: Image.Image,
     if tolerance is None:
         flat = diff_ink.flatten()
         tolerance = int(np.percentile(flat, auto_percentile))
-        print(f"Automatisch gewählte Toleranz ({auto_percentile}%-Quantil): {tolerance}")
+        # print(f"Automatisch gewählte Toleranz ({auto_percentile}%-Quantil): {tolerance}")
 
     # Prüfen, ob ein Kanal die Toleranz überschreitet
-    return not np.any(diff_ink > tolerance)
+    return np.any(diff_ink > tolerance)
 
 
 def test_every(dir_a: str,
@@ -87,9 +87,15 @@ def test_every(dir_a: str,
                                      bg_threshold=bg_threshold,
                                      tolerance=tolerance,
                                      auto_percentile=auto_percentile)
-            print(f"{file_a.name:25s} vs {file_b.name:25s} -> ok? {ok}")
+            if(ok == False):
+                print(f"{file_a.name:25s} vs {file_b.name:25s} -> ok? {ok}")
 
 
-# if __name__ == "__main__":
-#     # Beispiel-Aufruf: Alle Bilder in data/tmp/A vs alle in data/tmp/B
-#     test_every("data/tmp", "data/tmp", bg_threshold=250, tolerance=None, auto_percentile=99.0)
+if __name__ == "__main__":
+    # Beispiel-Aufruf: Alle Bilder in data/tmp/A vs alle in data/tmp/B
+    # test_every("data/tmp", "data/tmp", bg_threshold=250, tolerance=None, auto_percentile=99.0)
+    img_a = Image.open("data/tmp/0000377766.jpg")
+    img_b = Image.open("data/tmp/0000377766.jpg")
+
+    img_b = Image.open("data/tmp/0000427233.jpg")
+    print(all_pixels_of_A_in_B(img_a,img_b))

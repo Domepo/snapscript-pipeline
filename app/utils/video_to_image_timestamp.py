@@ -2,6 +2,8 @@ from pathlib import Path
 from datetime import datetime
 from utils.image_distance import compare_successive_images
 from utils.compare_images import all_pixels_of_A_in_B
+from utils.measure_time import measure_time
+
 import cv2
 import numpy as np
 from PIL import Image
@@ -15,6 +17,7 @@ def get_image_edges(img: Image.Image):
     num_edges = np.sum(edges > 0)
     return num_edges
 
+@measure_time
 def extract_frames_rename_by_timestamp(
     video_path: str,
     output_dir: str = "frames",
@@ -113,7 +116,7 @@ def extract_frames_rename_by_timestamp(
         # Oder ist das `last_kept_image` im `current_img` enthalten? (z.B. ein Menü erscheint)
         # Wenn beides nicht der Fall ist, ist es ein wirklich neues Bild.
 
-        if all_pixels_of_A_in_B(current_img, last_kept_image) or all_pixels_of_A_in_B(last_kept_image, current_img):
+        if all_pixels_of_A_in_B(last_kept_image, current_img):
             #Bild data\tmp\0000197166.jpg ist ein Duplikat/Teilbild von 0000059166.jpg. Überspringe.
             print(f"Bild {current_filename} ist ein Duplikat/Teilbild von {final_images_to_save[-1][0].name}.")
             final_images_to_save.pop(-1)

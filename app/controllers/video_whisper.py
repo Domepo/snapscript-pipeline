@@ -4,6 +4,7 @@ from whisper.utils import get_writer
 import config
 import re
 from services.ollama_fix_lecture_service import lecture_fix
+from utils.measure_time import measure_time
 from models.database import init_db
 from models.database import get_connection
 
@@ -18,7 +19,7 @@ def timestamp_to_milliseconds(ts: str) -> int:
         int(ms)
     )
     return total_ms
-
+@measure_time
 def generate_transcript(video_path:str) -> dict:
     """
     Transkribiert Video und schreibt SRT. Gibt Transkript-Resultat zurück.
@@ -34,7 +35,7 @@ def generate_transcript(video_path:str) -> dict:
 
     print(f"SRT gespeichert: data/videos/text.srt")
     return result
-
+@measure_time
 def store_transcript(result: dict, output_path:str = config.TRANSCRIPT_PATH) -> None:
     """
     Speichert Transkript (full_text + Zeilen) in DB und schreibt cleaned text in Datei.
