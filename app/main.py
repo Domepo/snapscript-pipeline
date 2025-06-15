@@ -7,7 +7,7 @@ from services.typst.build_document import create_typst_document
 from services.ollama_create_keywords import create_keywords
 from controllers.transcript_controller import compare_image_text_timestamp
 from controllers.video_whisper import generate_transcript, store_transcript
-from models.database import init_db
+from models.database import init_db, delete_db
 from utils.token_count import count_tokens
 from utils.video_to_image_timestamp import extract_frames_rename_by_timestamp
 from utils.clean_temp_data import clean_temp_data_files_only
@@ -39,7 +39,7 @@ if st.session_state.step >= 1:
     with st.spinner("🔊 Generiere Transkript..."):
         # script = generate_transcript(video_path)
         # transcript_id = store_transcript(script, config.TRANSCRIPT_PATH)
-        transcript_id = 11
+        transcript_id = 1
         st.session_state.transcript_id = transcript_id
     st.success("✅ Transkript erstellt.")
     st.session_state.step = 2
@@ -101,16 +101,17 @@ if st.session_state.step >= 7:
     with st.expander("🔑 Vorschau Keywords"):
         st.write(st.session_state.keywords)
 
-with st.sidebar:
-    if st.button("🔄 Neustart"):
-        st.session_state.clear()
-        st.experimental_rerun()
+st.markdown("---")
+if st.button("🔄 Neues Video verarbeiten", help="Setzt alles zurück und beginnt neu."):
+    st.session_state.clear()
+    
 
-temp_dirs = [
-    "data/cropped",
-    "data/cropped_failed",
-    "data/tmp",
-    "data/videos"
-]
+    temp_dirs = [
+        "data/cropped",
+        "data/cropped_failed",
+        "data/tmp",
+        "data/videos"
+    ]
 
-clean_temp_data_files_only(temp_dirs)
+    clean_temp_data_files_only(temp_dirs)
+    delete_db()

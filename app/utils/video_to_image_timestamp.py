@@ -3,6 +3,7 @@ from datetime import datetime
 from utils.image_distance import compare_successive_images
 from utils.compare_images import absolute_diff_compare
 from utils.measure_time import measure_time
+from collections import deque
 
 import cv2
 import numpy as np
@@ -17,6 +18,52 @@ def get_image_edges(img: Image.Image):
     num_edges = np.sum(edges > 0)
     return num_edges
 
+
+def detect_fade(frames):
+    """
+    Detects a fade-out effect in a sequence of video frames based on grayscale brightness analysis.
+
+    Steps:
+    1. Converts each frame to grayscale and calculates the average brightness.
+    2. Uses the last 10 brightness values to check for a decreasing trend (indicating a fade-out).
+    3. If a fade-out is detected:
+        - Calculates the frame-to-frame differences in brightness across the entire sequence.
+        - Traverses the differences in reverse to find where the fade likely started.
+        - Identifies the index of the last 'unfaded' frame, based on a small brightness change threshold.
+    4. Returns the unfaded frame at the detected index.
+
+    Parameters:
+    - frames (list of PIL.Image): The full list of video frames to analyze.
+
+    Returns:
+    - PIL.Image or None: The last unfaded frame before the fade-out began,
+      or None if no fade-out is detected.
+    """
+    # WEnn der vorherige oder der nachfoglenden mehr kanten hat wird das genommen
+    difference_threshold = 4
+    # Convert all frames to grayscale brightness values
+    gray_means_full = [np.array(f.convert("L")).mean() for f in frames]
+
+    # Only look at the last 10 values to detect a fade
+    gray_means_recent = gray_means_full[-10:]
+
+    if gray_means_recent == sorted(gray_means_recent, reverse=True):
+        print("FADE ERKANNT")
+
+        # Now analyze brightness differences across the full list
+        difference = np.diff(gray_means_full)
+        reversed_difference = np.flip(difference)
+
+        for idx, diff in enumerate(reversed_difference):
+            abs_diff = abs(diff)
+
+            if abs_diff < difference_threshold:
+                number_of_unfaded_image = len(reversed_difference)-idx
+                print(f"Number of unfaded image: {number_of_unfaded_image}")
+                return frames[number_of_unfaded_image]
+
+
+
 @measure_time
 def extract_frames_rename_by_timestamp(
     video_path: str,
@@ -29,6 +76,8 @@ def extract_frames_rename_by_timestamp(
     Liest ein Video frame-weise ein, speichert Bilder, die sich deutlich vom vorherigen unterscheiden,
     und benennt sie nach Timestamp. Bilder werden zunächst gesammelt und am Ende auf Dopplungen geprüft.
     """
+    frame_set = deque(maxlen=200)
+
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         raise RuntimeError(f"Konnte Video '{video_path}' nicht öffnen.")
@@ -51,6 +100,7 @@ def extract_frames_rename_by_timestamp(
 
     print("Phase 1: Kandidatenbilder aus Video extrahieren...")
     for idx in range(total_frames):
+        
         ok, frame_bgr = cap.read()
         if not ok:
             break
@@ -61,15 +111,26 @@ def extract_frames_rename_by_timestamp(
 
         img = Image.fromarray(cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB))
 
+        frame_set.append(img)
+
         if previous_img is None:
             previous_img = img
             continue 
 
         image_difference = compare_successive_images(previous_img, img)
 
-        # Wir speichern das Bild *vor* der Änderung als Kandidat.
-        # Das ist stabiler, da das Änderungs-Frame selbst oft Bewegungsunschärfe hat.
+
+        # Speichere das unfaded image
+        check_brightness = np.array(img.convert("L")).mean()
+        if check_brightness < 1:
+            print(f"Füge Unfaded-Kandidat {file_name} hinzu")
+            unfaded_image = detect_fade(frame_set)
+            candidate_images.append(unfaded_image.copy()) 
+            candidate_filenames.append(file_name)
+
+        print(f"ID: {idx}, Difference {image_difference}, Edges {get_image_edges(previous_img)}, Test: {check_brightness}")
         if image_difference > 25 and get_image_edges(previous_img) > 5000:
+
             print(f"Änderung nach Frame {idx-1} erkannt. Füge Kandidat hinzu.")
             
             # Wichtig: Speichere das *vorherige* Bild mit dem *vorherigen* Dateinamen
@@ -81,6 +142,7 @@ def extract_frames_rename_by_timestamp(
             candidate_filenames.append(prev_file_name)
 
         previous_img = img
+
 
     cap.release()
     print(f"Phase 1 abgeschlossen. {len(candidate_images)} Kandidaten gefunden.")
