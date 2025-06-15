@@ -1,7 +1,7 @@
 from pathlib import Path
 from datetime import datetime
 from utils.image_distance import compare_successive_images
-from utils.compare_images import all_pixels_of_A_in_B
+from utils.compare_images import absolute_diff_compare
 from utils.measure_time import measure_time
 
 import cv2
@@ -116,7 +116,7 @@ def extract_frames_rename_by_timestamp(
         # Oder ist das `last_kept_image` im `current_img` enthalten? (z.B. ein Menü erscheint)
         # Wenn beides nicht der Fall ist, ist es ein wirklich neues Bild.
 
-        if all_pixels_of_A_in_B(last_kept_image, current_img):
+        if absolute_diff_compare(last_kept_image, current_img):
             #Bild data\tmp\0000197166.jpg ist ein Duplikat/Teilbild von 0000059166.jpg. Überspringe.
             print(f"Bild {current_filename} ist ein Duplikat/Teilbild von {final_images_to_save[-1][0].name}.")
             final_images_to_save.pop(-1)

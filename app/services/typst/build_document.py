@@ -200,7 +200,7 @@ def parse_markdown_to_document_parts(markdown_text: str):
 
 
 @measure_time
-def create_typst_document(markdown_input: str,  keywords_str: str):
+def create_typst_document(markdown_input: str,  keywords_str: str, name_of_pdf: str = "Template") -> str:
     # === 1. Metadaten definieren (bleibt meist manuell) ===
     first_person_dict = build_first_person(
         name="Prof. Dr. rer. nat. Johannes Üpping",
@@ -236,7 +236,7 @@ def create_typst_document(markdown_input: str,  keywords_str: str):
 
     # === 4. Dokument kompilieren ===
     typst_input_path = config.TPYST_INPUT_PATH
-    pdf_output_path   = config.TYPST_PDF_OUTPUT_PATH
+    pdf_output_path   = f"C:/Users/domin/Documents/02_Github/snapscript-pipeline/data/pdf/{name_of_pdf}.pdf"
     root_directory    = config.ROOT_DIRECTORY
 
     print("Starte Typst-Kompilierung...")
@@ -275,3 +275,4 @@ def create_typst_document(markdown_input: str,  keywords_str: str):
         print(f"  Typ des Fehlers: {type(e)}")
 
     print("\nSkript-Ausführung beendet.")
+    return pdf_output_path

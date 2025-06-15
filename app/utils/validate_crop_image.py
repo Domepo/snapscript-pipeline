@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 
 
-def is_empty_or_two_tone(img: np.ndarray,
+def is_empty_or_two_tone(img_path: str,
                          var_thresh: float = 10.0,
                          lap_var_thresh: float = 20.0,
                          unique_gray_thresh: int = 3) -> bool:
@@ -10,6 +10,7 @@ def is_empty_or_two_tone(img: np.ndarray,
     True zurückgeben, wenn img entweder komplett gleichförmig, kantenarm
     oder nur two-tone (<= unique_gray_thresh Grauwert-Stufen) ist.
     """
+    img = cv2.imread(img_path)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # 1) Grauwert-Varianz
