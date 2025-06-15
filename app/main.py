@@ -10,7 +10,7 @@ from controllers.video_whisper import generate_transcript, store_transcript
 from models.database import init_db
 from utils.token_count import count_tokens
 from utils.video_to_image_timestamp import extract_frames_rename_by_timestamp
-import base64
+from utils.clean_temp_data import clean_temp_data_files_only
 import streamlit.components.v1 as components
 
 os.environ["STREAMLIT_WATCHER_TYPE"] = "none"
@@ -100,4 +100,16 @@ if st.session_state.step >= 7:
     with st.expander("🔑 Vorschau Keywords"):
         st.write(st.session_state.keywords)
 
-        # DELETE ALL FILES !!!!!!!
+with st.sidebar:
+    if st.button("🔄 Neustart"):
+        st.session_state.clear()
+        st.experimental_rerun()
+
+temp_dirs = [
+    "data/cropped",
+    "data/cropped_failed",
+    "data/tmp",
+    "data/videos"
+]
+
+clean_temp_data_files_only(temp_dirs)
