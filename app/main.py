@@ -93,6 +93,14 @@ if st.session_state.step >= 7:
         # Download-Button
         with open(pdf_path, "rb") as f:
             st.download_button("📥 PDF herunterladen", f, file_name=f"{pdf_name}.pdf")
+            temp_dirs = [
+            "data/cropped",
+            "data/cropped_failed",
+            "data/tmp",
+            "data/videos"
+            ]
+
+            clean_temp_data_files_only(temp_dirs)
 
     # Text-Vorschau
     with st.expander("📃 Vorschau Skript"):
@@ -105,13 +113,13 @@ st.markdown("---")
 if st.button("🔄 Neues Video verarbeiten", help="Setzt alles zurück und beginnt neu."):
     st.session_state.clear()
     
-
     temp_dirs = [
-        "data/cropped",
-        "data/cropped_failed",
-        "data/tmp",
-        "data/videos"
+    "data/cropped",
+    "data/cropped_failed",
+    "data/tmp",
+    "data/videos"
     ]
 
     clean_temp_data_files_only(temp_dirs)
+
     delete_db()
