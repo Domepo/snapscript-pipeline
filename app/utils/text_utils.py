@@ -1,3 +1,4 @@
+import logging
 def find_section_end_offset(full_text: str, section_to_find: str) -> int | None:
     """
     Findet den End-Offset (Position nach dem letzten Zeichen) des section_to_find im full_text.
@@ -7,5 +8,5 @@ def find_section_end_offset(full_text: str, section_to_find: str) -> int | None:
         start_index = full_text.index(section_to_find)
         return start_index + len(section_to_find)
     except ValueError:
-        print(f"WARNUNG: Abschnitt nicht im Transkript gefunden:\n{section_to_find[:80]}...")
+        logging.info(f"WARNUNG: Abschnitt nicht im Transkript gefunden:\n{section_to_find[:80]}...")
         return None

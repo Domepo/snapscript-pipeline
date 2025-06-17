@@ -1,12 +1,13 @@
 import ollama
 import config
 from utils.measure_time import measure_time
+import logging
 @measure_time
 def create_keywords(full_transcript_text: str) -> str | None:
     """
     Erstellt 5-10 Keywords aus dem Transkripttext.
     """
-    print(f"Sende Anfrage an Ollama mit Modell {config.OLLAMA_MODEL}")
+    logging.info(f"Sende Anfrage an Ollama mit Modell {config.OLLAMA_MODEL}")
     try:
         client = ollama.Client(host=config.OLLAMA_HOST)
         response = client.chat(
@@ -37,12 +38,12 @@ def create_keywords(full_transcript_text: str) -> str | None:
             if fixed_transrcibt:
                 return fixed_transrcibt 
             else:
-                print("Ollama hat einen leeren Abschnitt zurückgegeben.")
+                logging.info("Ollama hat einen leeren Abschnitt zurückgegeben.")
                 return None
         else:
-            print("Unerwartete Antwortstruktur von Ollama:", response)
+            logging.info("Unerwartete Antwortstruktur von Ollama:", response)
             return None
 
     except Exception as e:
-        print(f"Ein Fehler bei der Kommunikation mit Ollama ist aufgetreten: {e}")
+        logging.info(f"Ein Fehler bei der Kommunikation mit Ollama ist aufgetreten: {e}")
         return None

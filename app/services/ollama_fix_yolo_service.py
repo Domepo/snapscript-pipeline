@@ -1,11 +1,11 @@
 import ollama
 import config
-
+import logging
 def yolo_fix(image_path: str) -> bool | None:
     """
     Überprüft ob yolo mit dem Crop Fehler gemacht hat
     """
-    print(f"Sende Anfrage ob {image_path} ins Raster passt, mit dem Modell {config.OLLAMA_MODEL}")
+    logging.info(f"Sende Anfrage ob {image_path} ins Raster passt, mit dem Modell {config.OLLAMA_MODEL}")
     try:
         client = ollama.Client(host=config.OLLAMA_HOST)
         response = client.chat(
@@ -43,12 +43,12 @@ def yolo_fix(image_path: str) -> bool | None:
             elif fixed_transrcibt == "False":
                 return False 
             else:
-                print("Ollama hat einen leeren Abschnitt zurückgegeben.")
+                logging.info("Ollama hat einen leeren Abschnitt zurückgegeben.")
                 return None
         else:
-            print("Unerwartete Antwortstruktur von Ollama:", response)
+            logging.info("Unerwartete Antwortstruktur von Ollama:", response)
             return None
 
     except Exception as e:
-        print(f"Ein Fehler bei der Kommunikation mit Ollama ist aufgetreten: {e}")
+        logging.info(f"Ein Fehler bei der Kommunikation mit Ollama ist aufgetreten: {e}")
         return None

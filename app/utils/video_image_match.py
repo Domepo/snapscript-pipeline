@@ -3,7 +3,7 @@
 from PIL import Image
 import numpy as np
 import cv2
-
+import logging
 
 def check_if_image_contains_image(image1_pil, image2_pil) -> bool:
     """

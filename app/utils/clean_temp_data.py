@@ -1,5 +1,5 @@
 import os
-
+import logging
 def clean_temp_data_files_only(directories):
     """
     Löscht nur Dateien in den angegebenen Verzeichnissen – keine Ordner selbst.
@@ -13,16 +13,16 @@ def clean_temp_data_files_only(directories):
                 try:
                     if os.path.isfile(file_path) or os.path.islink(file_path):
                         os.remove(file_path)
-                        print(f"🧹 Datei gelöscht: {file_path}")
+                        logging.info(f"🧹 Datei gelöscht: {file_path}")
                     elif os.path.isdir(file_path):
                         # Optional: leeren Unterordner löschen
                         try:
                             os.rmdir(file_path)
-                            print(f"📁 Leerer Unterordner gelöscht: {file_path}")
+                            logging.info(f"📁 Leerer Unterordner gelöscht: {file_path}")
                         except OSError:
                             # Ordner ist nicht leer
                             pass
                 except Exception as e:
-                    print(f"❌ Fehler beim Löschen von {file_path}: {e}")
+                    logging.info(f"❌ Fehler beim Löschen von {file_path}: {e}")
         else:
-            print(f"⚠️ Ordner nicht gefunden: {directory}")
+            logging.info(f"⚠️ Ordner nicht gefunden: {directory}")

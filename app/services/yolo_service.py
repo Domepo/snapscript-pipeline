@@ -5,7 +5,7 @@ import os
 import config
 import cv2
 import time
-
+import logging
 def box_inside(box_a, box_b):
     """Prüft, ob box_a komplett innerhalb von box_b liegt."""
     xa1, ya1, xa2, ya2 = box_a
@@ -35,7 +35,7 @@ def get_crop_image(image_folder:str = "data/tmp",  output_folder:str = "data/cro
         results = model(img_path)[0]
 
         if len(results.boxes) == 0:
-            print(f"Keine Objekte in {file}")
+            logging.info(f"Keine Objekte in {file}")
             continue
 
         # Nur Klasse 0
@@ -46,7 +46,7 @@ def get_crop_image(image_folder:str = "data/tmp",  output_folder:str = "data/cro
         class0_boxes = [xyxy[i] for i, c in enumerate(cls) if int(c) == 0]
 
         if not class0_boxes:
-            print(f"Keine Klasse-0-Boxen in {file}")
+            logging.info(f"Keine Klasse-0-Boxen in {file}")
             continue
 
         # Innere Boxen entfernen
@@ -67,15 +67,12 @@ def get_crop_image(image_folder:str = "data/tmp",  output_folder:str = "data/cro
 
             out_path = os.path.join(output_folder, f"{file_number+idx}{ext}")
             cv2.imwrite(out_path, crop)
-            print(f"Gespeichert: {out_path}", flush=True)
+            logging.info(f"Gespeichert: {out_path}")
 
             saved_crops.append((out_path, f"FAILED_crop_{file_number+idx}{ext}"))
 
     # Schritt 2: Prüfen & ggf. verschieben
     for original_path, failed_filename in saved_crops:
-        time.sleep(10)
-        print("l<akjsdnalksjdhlaksjdhlkasjdhalksjdhlkajshdasjk", flush=True)
-
         validate_image = is_empty_or_two_tone(original_path,
                             var_thresh=5.0,
                             lap_var_thresh=50.0,
@@ -84,4 +81,4 @@ def get_crop_image(image_folder:str = "data/tmp",  output_folder:str = "data/cro
         if not yolo_fix(original_path) or validate_image:
             failed_path = os.path.join(cropped_fail_folder, failed_filename)
             os.rename(original_path, failed_path)
-            print(f"❌ Verschoben nach: {failed_path}", flush=True)
+            logging.info(f"❌ Verschoben nach: {failed_path}")

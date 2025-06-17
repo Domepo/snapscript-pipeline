@@ -1,5 +1,5 @@
 from .database import get_connection
-
+import logging
 def add_transcript(full_text: str) -> int | None:
     """Fügt ein neues Transkript hinzu und gibt dessen ID zurück."""
     conn = get_connection()
@@ -8,10 +8,10 @@ def add_transcript(full_text: str) -> int | None:
         cursor.execute("INSERT INTO transcripts (full_text) VALUES (?)", (full_text,))
         transcript_id = cursor.lastrowid
         conn.commit()
-        print(f"Transkript erfolgreich hinzugefügt mit ID: {transcript_id}")
+        logging.info(f"Transkript erfolgreich hinzugefügt mit ID: {transcript_id}")
         return transcript_id
     except Exception as e:
-        print(f"Fehler beim Hinzufügen des Transkripts: {e}")
+        logging.info(f"Fehler beim Hinzufügen des Transkripts: {e}")
         return None
     finally:
         conn.close()

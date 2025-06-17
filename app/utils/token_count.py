@@ -1,5 +1,5 @@
 import tiktoken
-
+import logging
 def count_tokens(text:str, enc_name="o200k_base", thresh=2):
     """
     Counts the number of tokens in the given text using the specified encoding and applies a threshold multiplier.
@@ -17,5 +17,5 @@ def count_tokens(text:str, enc_name="o200k_base", thresh=2):
     if cnt < 50:
         return 50
     else:
-        print("Anzahl der Tokens im Skript: ", cnt)
+        logging.info(f"Anzahl der Tokens im Skript: {cnt}")
         return round(cnt)
