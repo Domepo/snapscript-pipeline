@@ -57,7 +57,8 @@ Hier ist der Textabschnitt:
 ---
 """
     try:
-        response = ollama.chat(
+        client = ollama.Client(host=config.OLLAMA_HOST)
+        response = client.chat(
             model=config.OLLAMA_MODEL,
             messages=[{'role': 'system', 'content': prompt}],
             options={"num_ctx": config.OLLAMA_NUM_CTX}

@@ -1,7 +1,7 @@
 import os
 import config
 import collections
-
+import logging
 from models.transcript import get_transcript_by_id
 from models.image_marker import get_image_markers_for_transcript
 from models.database import init_db
@@ -56,7 +56,7 @@ def compare_image_text_timestamp(images_path: str, transcript_id: str,  transcri
     images_for_interval = collections.defaultdict(list)
 
     # 2. BILDER VERARBEITEN: Ordne jedes Bild dem richtigen Text-Intervall zu
-    print(f"\nDurchsuche Bilder im Verzeichnis: {images_path}")
+    logging.info(f"\nDurchsuche Bilder im Verzeichnis: {images_path}")
 
     # Sortiere die Bilder nach Dateinamen, die als Zeitstempel fungieren
     all_images = [f for f in os.listdir(images_path) if f.lower().endswith(('.png','.jpg','.jpeg'))]
@@ -90,14 +90,14 @@ def compare_image_text_timestamp(images_path: str, transcript_id: str,  transcri
                 end = int(intervals[idx + 1]['start_timestamp'])
 
             if start <= timestamp < end:
-                print(f"  [Match] Bild '{image_file}' (Timestamp: {timestamp}) gehört zu Intervall {idx} ({start}-{end})")
+                logging.info(f"  [Match] Bild '{image_file}' (Timestamp: {timestamp}) gehört zu Intervall {idx} ({start}-{end})")
                 images_for_interval[idx].append(full_image_path)
                 # Da jedes Bild nur zu einem Intervall gehören kann, können wir die innere Schleife abbrechen.
                 break 
 
             
     # 3. TEXT ERSTELLEN: Baue den finalen Output zusammen
-    print("\nErstelle den finalen Text...")
+    logging.info("\nErstelle den finalen Text...")
     output_lines = []
     for idx, interval in enumerate(intervals):
         # Füge die Textzeile hinzu
@@ -114,7 +114,7 @@ def compare_image_text_timestamp(images_path: str, transcript_id: str,  transcri
     with open(transcript_with_image_path, "w", encoding="utf-8") as f:
         f.write("\n".join(output_lines))
 
-    print("Fertig – siehe transcript_with_images.txt")
-    print(f"Anzahl Zeilen in output_lines: {len(output_lines)}")
+    logging.info("Fertig – siehe transcript_with_images.txt")
+    logging.info(f"Anzahl Zeilen in output_lines: {len(output_lines)}")
     return "\n".join(output_lines)
 

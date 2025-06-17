@@ -8,7 +8,8 @@ def create_keywords(full_transcript_text: str) -> str | None:
     """
     print(f"Sende Anfrage an Ollama mit Modell {config.OLLAMA_MODEL}")
     try:
-        response = ollama.chat(
+        client = ollama.Client(host=config.OLLAMA_HOST)
+        response = client.chat(
             model=config.OLLAMA_MODEL,
             messages=[
                 {

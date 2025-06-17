@@ -4,6 +4,7 @@ from utils.validate_crop_image import is_empty_or_two_tone
 import os
 import config
 import cv2
+import time
 
 def box_inside(box_a, box_b):
     """Prüft, ob box_a komplett innerhalb von box_b liegt."""
@@ -66,12 +67,14 @@ def get_crop_image(image_folder:str = "data/tmp",  output_folder:str = "data/cro
 
             out_path = os.path.join(output_folder, f"{file_number+idx}{ext}")
             cv2.imwrite(out_path, crop)
-            print(f"Gespeichert: {out_path}")
+            print(f"Gespeichert: {out_path}", flush=True)
 
             saved_crops.append((out_path, f"FAILED_crop_{file_number+idx}{ext}"))
 
     # Schritt 2: Prüfen & ggf. verschieben
     for original_path, failed_filename in saved_crops:
+        time.sleep(10)
+        print("l<akjsdnalksjdhlaksjdhlkasjdhalksjdhlkajshdasjk", flush=True)
 
         validate_image = is_empty_or_two_tone(original_path,
                             var_thresh=5.0,
@@ -81,4 +84,4 @@ def get_crop_image(image_folder:str = "data/tmp",  output_folder:str = "data/cro
         if not yolo_fix(original_path) or validate_image:
             failed_path = os.path.join(cropped_fail_folder, failed_filename)
             os.rename(original_path, failed_path)
-            print(f"❌ Verschoben nach: {failed_path}")
+            print(f"❌ Verschoben nach: {failed_path}", flush=True)

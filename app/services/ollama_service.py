@@ -9,7 +9,8 @@ def get_relevant_section(image_path: str, full_transcript_text: str) -> str | No
     """
     print(f"Sende Anfrage an Ollama mit Modell {config.OLLAMA_MODEL} für Bild {image_path}...")
     try:
-        response = ollama.chat(
+        client = ollama.Client(host=config.OLLAMA_HOST)
+        response = client.chat(
             model=config.OLLAMA_MODEL,
             messages=[
                 {

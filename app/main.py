@@ -11,11 +11,26 @@ from models.database import init_db, delete_db
 from utils.token_count import count_tokens
 from utils.video_to_image_timestamp import extract_frames_rename_by_timestamp
 from utils.clean_temp_data import clean_temp_data_files_only
+import logging
 import torch
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+
 torch.classes.__path__ = []
 
 os.environ["STREAMLIT_WATCHER_TYPE"] = "none"
 
+temp_dirs = [
+"data/cropped",
+"data/cropped_failed",
+"data/tmp",
+"data/videos"
+]
+
+clean_temp_data_files_only(temp_dirs)
 
 st.set_page_config(page_title="Video2Script", layout="wide")
 st.title("🎬 Video zu Skript Generator")
@@ -35,11 +50,11 @@ if uploaded_file:
 
     st.session_state.step = 1
 
+
 if st.session_state.step >= 1:
     with st.spinner("🔊 Generiere Transkript..."):
-        # script = generate_transcript(video_path)
-        # transcript_id = store_transcript(script, config.TRANSCRIPT_PATH)
-        transcript_id = 1
+        script = generate_transcript(video_path)
+        transcript_id = store_transcript(script, config.TRANSCRIPT_PATH)
         st.session_state.transcript_id = transcript_id
     st.success("✅ Transkript erstellt.")
     st.session_state.step = 2
@@ -81,7 +96,7 @@ if st.session_state.step >= 7:
     with st.spinner("📄 Erstelle PDF mit Typst..."):
         video_filename = os.path.basename(video_path)
         pdf_name = os.path.splitext(video_filename)[0]  # z. B. "Astro"
-        create_typst_document(st.session_state.final_script, st.session_state.keywords, pdf_name)
+        create_typst_document(st.session_state.final_script, st.session_state.keywords, f"data/pdf/{pdf_name}.pdf")
 
     st.success("✅ PDF generiert.")
 
@@ -93,14 +108,6 @@ if st.session_state.step >= 7:
         # Download-Button
         with open(pdf_path, "rb") as f:
             st.download_button("📥 PDF herunterladen", f, file_name=f"{pdf_name}.pdf")
-            temp_dirs = [
-            "data/cropped",
-            "data/cropped_failed",
-            "data/tmp",
-            "data/videos"
-            ]
-
-            clean_temp_data_files_only(temp_dirs)
 
     # Text-Vorschau
     with st.expander("📃 Vorschau Skript"):

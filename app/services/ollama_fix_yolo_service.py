@@ -7,7 +7,8 @@ def yolo_fix(image_path: str) -> bool | None:
     """
     print(f"Sende Anfrage ob {image_path} ins Raster passt, mit dem Modell {config.OLLAMA_MODEL}")
     try:
-        response = ollama.chat(
+        client = ollama.Client(host=config.OLLAMA_HOST)
+        response = client.chat(
             model=config.OLLAMA_MODEL,
             messages=[
                 {
