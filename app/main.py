@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import config
+import time
 from services.yolo_service import get_crop_image
 from services.transcript_to_script_service import transcript_to_script_iterative
 from services.typst.build_document import create_typst_document
@@ -28,6 +29,7 @@ temp_dirs = [
 "data/cropped_failed",
 "data/tmp",
 "data/videos"
+"data/pdf"
 ]
 
 clean_temp_data_files_only(temp_dirs)
@@ -116,18 +118,12 @@ if st.session_state.step >= 7:
 
     with st.expander("🔑 Vorschau Keywords"):
         st.write(st.session_state.keywords)
+    time.sleep(1)
+    st.session_state.step = 8
 
-st.markdown("---")
-if st.button("🔄 Neues Video verarbeiten", help="Setzt alles zurück und beginnt neu."):
-    st.session_state.clear()
-    
-    temp_dirs = [
-    "data/cropped",
-    "data/cropped_failed",
-    "data/tmp",
-    "data/videos"
-    ]
-
-    clean_temp_data_files_only(temp_dirs)
-
-    delete_db()
+if st.session_state.step >= 8:
+    st.markdown("---")
+    if st.button("🔄 Neues Video verarbeiten", help="Setzt alles zurück und beginnt neu."):
+        st.session_state.clear()
+        clean_temp_data_files_only(temp_dirs)
+        delete_db()
