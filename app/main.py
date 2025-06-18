@@ -64,6 +64,7 @@ if st.session_state.step >= 2:
         extract_frames_rename_by_timestamp(video_path, "data/tmp")
     st.success("✅ Frames extrahiert.")
     st.session_state.step = 3
+    
 
 if st.session_state.step >= 3:
     with st.spinner("📐 Bildausschnitte mit YOLO..."):

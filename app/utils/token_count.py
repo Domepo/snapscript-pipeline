@@ -14,8 +14,8 @@ def count_tokens(text:str, enc_name="o200k_base", thresh=2):
     """
     enc = tiktoken.get_encoding(enc_name)
     cnt = len(enc.encode(text)) * thresh
-    if cnt < 50:
-        return 50
+    if cnt < 1024:
+        return 1024
     else:
         logging.info(f"Anzahl der Tokens im Skript: {cnt}")
         return round(cnt)
