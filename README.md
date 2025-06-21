@@ -3,7 +3,7 @@
 ![output](assets/output.gif)
 *Vom Vorlesungs‑Video zum strukturierten Skript & PDF – vollautomatisch.*
 ## Über das Projekt
-
+![structure](assets/structure.png)
 Video2Script verwandelt aufgezeichnete Vorlesungen (oder andere Bildschirm‑/Kamera‑Videos) in ein sauber gegliedertes Skript inkl. Bildern, Schlagwörtern und fertigem PDF‑Export.
 Dazu kombiniert der Workflow mehrere KI‑Modelle und Open‑Source‑Tools:
 
