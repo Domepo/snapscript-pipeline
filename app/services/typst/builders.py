@@ -2,6 +2,7 @@
 
 import json
 from typing import List, Dict
+import logging
 
 def build_first_person(name: str, uni: str, email: str, phone: str) -> Dict:
     """

@@ -4,7 +4,7 @@ from utils.image_distance import compare_successive_images
 from utils.compare_images import absolute_diff_compare
 from utils.measure_time import measure_time
 from collections import deque
-
+import logging
 import cv2
 import numpy as np
 from PIL import Image
@@ -48,7 +48,7 @@ def detect_fade(frames):
     gray_means_recent = gray_means_full[-10:]
 
     if gray_means_recent == sorted(gray_means_recent, reverse=True):
-        print("FADE ERKANNT")
+        logging.info("FADE ERKANNT")
 
         # Now analyze brightness differences across the full list
         difference = np.diff(gray_means_full)
@@ -59,7 +59,7 @@ def detect_fade(frames):
 
             if abs_diff < difference_threshold:
                 number_of_unfaded_image = len(reversed_difference)-idx
-                print(f"Number of unfaded image: {number_of_unfaded_image}")
+                logging.info(f"Number of unfaded image: {number_of_unfaded_image}")
                 return frames[number_of_unfaded_image]
 
 
@@ -98,7 +98,7 @@ def extract_frames_rename_by_timestamp(
     candidate_images = []
     candidate_filenames = []
 
-    print("Phase 1: Kandidatenbilder aus Video extrahieren...")
+    logging.info("Phase 1: Kandidatenbilder aus Video extrahieren...")
     for idx in range(total_frames):
         
         ok, frame_bgr = cap.read()
@@ -123,15 +123,15 @@ def extract_frames_rename_by_timestamp(
         # Speichere das unfaded image
         check_brightness = np.array(img.convert("L")).mean()
         if check_brightness < 1:
-            print(f"Füge Unfaded-Kandidat {file_name} hinzu")
+            logging.info(f"Füge Unfaded-Kandidat {file_name} hinzu")
             unfaded_image = detect_fade(frame_set)
             candidate_images.append(unfaded_image.copy()) 
             candidate_filenames.append(file_name)
 
-        print(f"ID: {idx}, Difference {image_difference}, Edges {get_image_edges(previous_img)}, Test: {check_brightness}")
+        logging.info(f"ID: {idx}, Difference {image_difference}, Edges {get_image_edges(previous_img)}, Test: {check_brightness}")
         if image_difference > 25 and get_image_edges(previous_img) > 5000:
 
-            print(f"Änderung nach Frame {idx-1} erkannt. Füge Kandidat hinzu.")
+            logging.info(f"Änderung nach Frame {idx-1} erkannt. Füge Kandidat hinzu.")
             
             # Wichtig: Speichere das *vorherige* Bild mit dem *vorherigen* Dateinamen
             prev_elapsed_ms = int(((idx - 1) / fps) * 1000)
@@ -145,13 +145,13 @@ def extract_frames_rename_by_timestamp(
 
 
     cap.release()
-    print(f"Phase 1 abgeschlossen. {len(candidate_images)} Kandidaten gefunden.")
+    logging.info(f"Phase 1 abgeschlossen. {len(candidate_images)} Kandidaten gefunden.")
 
     # --- KORRIGIERTER TEIL ---
-    print("\nPhase 2: Dopplungen prüfen und finale Bilder speichern...")
+    logging.info("\nPhase 2: Dopplungen prüfen und finale Bilder speichern...")
 
     if not candidate_images:
-        print("Keine relevanten Bilder zum Speichern gefunden.")
+        logging.info("Keine relevanten Bilder zum Speichern gefunden.")
         return
 
     FORMAT_MAP = {
@@ -180,14 +180,14 @@ def extract_frames_rename_by_timestamp(
 
         if absolute_diff_compare(last_kept_image, current_img):
             #Bild data\tmp\0000197166.jpg ist ein Duplikat/Teilbild von 0000059166.jpg. Überspringe.
-            print(f"Bild {current_filename} ist ein Duplikat/Teilbild von {final_images_to_save[-1][0].name}.")
+            logging.info(f"Bild {current_filename} ist ein Duplikat/Teilbild von {final_images_to_save[-1][0].name}.")
             final_images_to_save.pop(-1)
             final_images_to_save.append((current_filename, current_img))
-            print("-> Vorheriges wird nicht gespeichert, da es ein Duplikat ist.")
+            logging.info("-> Vorheriges wird nicht gespeichert, da es ein Duplikat ist.")
             
         else:
             # Kein Duplikat -> behalten und als neue Referenz setzen.
-            print(f"Bild {current_filename.name} ist neu. Wird behalten.")
+            logging.info(f"Bild {current_filename.name} ist neu. Wird behalten.")
             last_kept_image = current_img
             final_images_to_save.append((current_filename, current_img))
 
@@ -197,12 +197,12 @@ def extract_frames_rename_by_timestamp(
     Wir entfernen das allererste Bild, da es immer das erste Bild des Videos ist
     und in der Regel kein relevantes Bild darstellt (z.B. schwarzer Bildschirm, Intro).
     """
-    print(f"Entferne erstes Bild {final_images_to_save[0][0].name} aus der Liste, da es das erste Video-Bild ist.")
+    logging.info(f"Entferne erstes Bild {final_images_to_save[0][0].name} aus der Liste, da es das erste Video-Bild ist.")
     final_images_to_save.pop(0) 
 
-    print(f"\nSpeichere {len(final_images_to_save)} finale Bilder...")
+    logging.info(f"\nSpeichere {len(final_images_to_save)} finale Bilder...")
     for filename, image in final_images_to_save:
         image.save(filename, format=pillow_fmt, quality=95)
-        print(f"-> {filename} gespeichert.")
+        logging.info(f"-> {filename} gespeichert.")
 
-    print("Fertig – alle relevanten Frames wurden gespeichert.")
+    logging.info("Fertig – alle relevanten Frames wurden gespeichert.")

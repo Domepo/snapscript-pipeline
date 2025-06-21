@@ -1,4 +1,5 @@
 from .database import get_connection
+import logging
 
 def add_image_marker(transcript_id: int, image_path: str, char_offset: int, matched_text_snippet: str = ""):
     """Fügt einen Bildmarker für ein Transkript hinzu."""
@@ -10,9 +11,9 @@ def add_image_marker(transcript_id: int, image_path: str, char_offset: int, matc
             VALUES (?, ?, ?, ?)
         ''', (transcript_id, image_path, char_offset, matched_text_snippet))
         conn.commit()
-        print(f"Bildmarker für '{image_path}' bei Offset {char_offset} (Transkript ID: {transcript_id}) hinzugefügt.")
+        logging.info(f"Bildmarker für '{image_path}' bei Offset {char_offset} (Transkript ID: {transcript_id}) hinzugefügt.")
     except Exception as e:
-        print(f"Fehler beim Hinzufügen des Bildmarkers: {e}")
+        logging.info(f"Fehler beim Hinzufügen des Bildmarkers: {e}")
     finally:
         conn.close()
 

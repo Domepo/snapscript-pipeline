@@ -3,7 +3,7 @@
 import cv2
 import numpy as np
 from PIL import Image
-
+import logging
 
 
 # def load_images(path_a: Path, path_b: Path) -> Tuple[np.ndarray, np.ndarray]:
@@ -36,12 +36,12 @@ def absolute_diff_compare(img_a, img_b,
 
     ink_count = np.count_nonzero(ink_mask)
     if ink_count == 0:
-        print("Keine Tintenpixel gefunden. Ergebnis: OK")
+        logging.info("Keine Tintenpixel gefunden. Ergebnis: OK")
         return True
 
     errors = np.count_nonzero(error_mask & ink_mask)
     rate = errors / ink_count
-    print(f"Absolute Diff: {errors}/{ink_count} Fehler ({rate*100:.2f}%)")
+    logging.info(f"Absolute Diff: {errors}/{ink_count} Fehler ({rate*100:.2f}%)")
     return rate <= max_error_rate
 
 
@@ -57,5 +57,5 @@ def absolute_diff_compare(img_a, img_b,
 #     ]
 #     for a, b in pairs:
 #         img_a, img_b = load_images(Path(a), Path(b))
-#         print(f"Vergleich {a} vs {b}:")
-#         print(absolute_diff_compare(img_a, img_b))
+#         logging.info(f"Vergleich {a} vs {b}:")
+#         logging.info(absolute_diff_compare(img_a, img_b))

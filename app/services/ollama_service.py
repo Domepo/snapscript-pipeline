@@ -1,15 +1,16 @@
 import ollama
 import config
 from services.fuzzing_service import find_paragraph_with_fuzzing
-
+import logging
 def get_relevant_section(image_path: str, full_transcript_text: str) -> str | None:
     """
     Sendet das Bild und den VOLLSTÄNDIGEN Transkripttext an Ollama und gibt den relevanten Abschnitt zurück.
     Gibt None zurück, wenn ein Fehler auftritt oder keine Antwort erhalten wird.
     """
-    print(f"Sende Anfrage an Ollama mit Modell {config.OLLAMA_MODEL} für Bild {image_path}...")
+    logging.info(f"Sende Anfrage an Ollama mit Modell {config.OLLAMA_MODEL} für Bild {image_path}...")
     try:
-        response = ollama.chat(
+        client = ollama.Client(host=config.OLLAMA_HOST)
+        response = client.chat(
             model=config.OLLAMA_MODEL,
             messages=[
                 {
@@ -47,26 +48,26 @@ def get_relevant_section(image_path: str, full_transcript_text: str) -> str | No
                 relevant_section = find_paragraph_with_fuzzing(full_transcript_text,relevant_section)
 
                 if relevant_section in full_transcript_text:
-                    print(relevant_section)
+                    logging.info(relevant_section)
                     return relevant_section
                 else:
                     # Versuch einer "Fuzzy"-Suche oder Loggen des Problems
-                    print(f"WARNUNG: Ollama-Abschnitt '{relevant_section[:50]}...' nicht exakt im Originaltext gefunden. Versuche Teilübereinstimmung.")
+                    logging.info(f"WARNUNG: Ollama-Abschnitt '{relevant_section[:50]}...' nicht exakt im Originaltext gefunden. Versuche Teilübereinstimmung.")
                     # Hier könnte man versuchen, den ähnlichsten Substring zu finden,
                     # aber das kann komplex werden. Fürs Erste geben wir None zurück oder den Teil, der passt.
                     # Eine einfache Prüfung:
                     # for i in range(len(full_transcript_text) - len(relevant_section) + 1):
                     #     if full_transcript_text[i:i+len(relevant_section)].strip() == relevant_section: # Vergleiche ohne Rand-Leerzeichen
                     #         return full_transcript_text[i:i+len(relevant_section)]
-                    print("Exakter Abschnitt nicht gefunden, Ollama-Antwort könnte abweichen. Überprüfen Sie die Ollama-Antwort manuell.")
+                    logging.info("Exakter Abschnitt nicht gefunden, Ollama-Antwort könnte abweichen. Überprüfen Sie die Ollama-Antwort manuell.")
                     return None # Oder relevant_section, wenn man das Risiko eingehen will
             else:
-                print("Ollama hat einen leeren Abschnitt zurückgegeben.")
+                logging.info("Ollama hat einen leeren Abschnitt zurückgegeben.")
                 return None
         else:
-            print("Unerwartete Antwortstruktur von Ollama:", response)
+            logging.info("Unerwartete Antwortstruktur von Ollama:", response)
             return None
 
     except Exception as e:
-        print(f"Ein Fehler bei der Kommunikation mit Ollama ist aufgetreten: {e}")
+        logging.info(f"Ein Fehler bei der Kommunikation mit Ollama ist aufgetreten: {e}")
         return None

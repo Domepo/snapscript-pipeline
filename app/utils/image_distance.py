@@ -3,6 +3,7 @@ import imagehash
 import os
 import itertools
 import matplotlib.pyplot as plt
+import logging
 def compare_successive_images_folder(image_folder:str):
 
     image_files = [f for f in os.listdir(image_folder) if f.endswith(('.png', '.jpg', '.jpeg'))]
@@ -44,7 +45,7 @@ def compare_successive_images_folder(image_folder:str):
         # Umbenennen
         os.rename(old_path, new_path)
         
-        print(f"{file1} <-> {file2} | Unterschied: {diff}")
+        logging.info(f"{file1} <-> {file2} | Unterschied: {diff}")
 
 def compare_successive_images(image1:Image.Image, image2:Image.Image):
     """
@@ -60,4 +61,4 @@ def compare_successive_images(image1:Image.Image, image2:Image.Image):
     diff = hash1 - hash2
     
     return diff
-# print(compare_successive_images("data/tmp/test/0000059200.jpg","data/tmp/test/0000438800.jpg"))
+# logging.info(compare_successive_images("data/tmp/test/0000059200.jpg","data/tmp/test/0000438800.jpg"))

@@ -1,7 +1,7 @@
 import sqlite3
 import config
 import os
-
+import logging
 def get_connection():
     return sqlite3.connect(config.DB_NAME)
 
@@ -50,12 +50,12 @@ def init_db():
     ''')
     conn.commit()
     conn.close()
-    print(f"Datenbank '{config.DB_NAME}' initialisiert und Tabellen 'transcripts' & 'image_markers' sichergestellt.")
+    logging.info(f"Datenbank '{config.DB_NAME}' initialisiert und Tabellen 'transcripts' & 'image_markers' sichergestellt.")
 
 def delete_db():
     """Löscht die SQLite-Datenbankdatei vollständig."""
     if os.path.exists(config.DB_NAME):
         os.remove(config.DB_NAME)
-        print(f"Datenbank '{config.DB_NAME}' wurde gelöscht.")
+        logging.info(f"Datenbank '{config.DB_NAME}' wurde gelöscht.")
     else:
-        print(f"Datenbank '{config.DB_NAME}' existiert nicht.")
+        logging.info(f"Datenbank '{config.DB_NAME}' existiert nicht.")

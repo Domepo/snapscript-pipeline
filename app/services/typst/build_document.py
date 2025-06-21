@@ -12,6 +12,7 @@ import typst
 import datetime
 import config
 import json
+import logging
 # === PARSER-LOGIK (MIT KORRIGIERTER BILDERKENNUNG) ===
 def parse_markdown_to_document_parts(markdown_text: str):
     lines = markdown_text.strip().split('\n')
@@ -100,7 +101,7 @@ def parse_markdown_to_document_parts(markdown_text: str):
                 # Sollte nicht passieren, wenn Regex matched, aber als Sicherheitsnetz
                 raw_path_content = line.strip()[1:-1] # Inhalt der Klammern
                 image_path_in_dict = "/" + raw_path_content.lstrip('/')
-                print(f"WARNUNG: Bildpfad aus '{line}' konnte nicht standardmäßig extrahiert werden, verwende '{image_path_in_dict}'.")
+                logging.info(f"WARNUNG: Bildpfad aus '{line}' konnte nicht standardmäßig extrahiert werden, verwende '{image_path_in_dict}'.")
 
             image_filename = image_path_in_dict.split('/')[-1]
             image_element = {
@@ -111,7 +112,7 @@ def parse_markdown_to_document_parts(markdown_text: str):
             }
 
             if state == 0: 
-                print(f"Hinweis: Bild '{image_filename}' ({image_path_in_dict}) vor Hauptüberschrift. Erstelle implizite Sektion 'Einleitung'.")
+                logging.info(f"Hinweis: Bild '{image_filename}' ({image_path_in_dict}) vor Hauptüberschrift. Erstelle implizite Sektion 'Einleitung'.")
                 finalize_current_section()
                 flush_text_buffer_to_content(text_buffer, current_section_content_elements)
                 current_section_title = "Einleitung" 
@@ -119,7 +120,7 @@ def parse_markdown_to_document_parts(markdown_text: str):
                 state = 2
             elif state == 1: 
                 flush_text_buffer_to_content(text_buffer, doc_abstract_content_elements)
-                print(f"Hinweis: Bild '{image_filename}' ({image_path_in_dict}) im Abstract-Bereich. Wird erster/impliziter Sektion zugeordnet.")
+                logging.info(f"Hinweis: Bild '{image_filename}' ({image_path_in_dict}) im Abstract-Bereich. Wird erster/impliziter Sektion zugeordnet.")
                 if not current_section_title and not parsed_sections_data: 
                     current_section_title = "Einleitung"
                 state = 2
@@ -200,7 +201,7 @@ def parse_markdown_to_document_parts(markdown_text: str):
 
 
 @measure_time
-def create_typst_document(markdown_input: str,  keywords_str: str, name_of_pdf: str = "Template") -> str:
+def create_typst_document(markdown_input: str,  keywords_str: str, pdf_path: str = "data/pdf/test.pdf") -> str:
     # === 1. Metadaten definieren (bleibt meist manuell) ===
     first_person_dict = build_first_person(
         name="Prof. Dr. rer. nat. Johannes Üpping",
@@ -236,22 +237,22 @@ def create_typst_document(markdown_input: str,  keywords_str: str, name_of_pdf: 
 
     # === 4. Dokument kompilieren ===
     typst_input_path = config.TPYST_INPUT_PATH
-    pdf_output_path   = f"C:/Users/domin/Documents/02_Github/snapscript-pipeline/data/pdf/{name_of_pdf}.pdf"
+    pdf_output_path   = pdf_path
     root_directory    = config.ROOT_DIRECTORY
 
-    print("Starte Typst-Kompilierung...")
-    print(f"  Typst Input: {typst_input_path}")
-    print(f"  PDF Output: {pdf_output_path}")
-    print(f"  Root Directory: {root_directory}")
+    logging.info("Starte Typst-Kompilierung...")
+    logging.info(f"  Typst Input: {typst_input_path}")
+    logging.info(f"  PDF Output: {pdf_output_path}")
+    logging.info(f"  Root Directory: {root_directory}")
     
     # Optional: Detaillierte Ausgabe der generierten Bildpfade zur Überprüfung
-    print("\n  --- Generierte Bildpfade in Sections ---")
+    logging.info("\n  --- Generierte Bildpfade in Sections ---")
     for i, section_dict in enumerate(sections_list_of_dicts):
-        print(f"  Section {i+1}: {section_dict.get('name')}")
+        logging.info(f"  Section {i+1}: {section_dict.get('name')}")
         for content_item in section_dict.get('content', []):
             if content_item.get('type') == 'image':
-                print(f"    Bildpfad: {content_item.get('path')}")
-    print("  --- Ende Bildpfade ---\n")
+                logging.info(f"    Bildpfad: {content_item.get('path')}")
+    logging.info("  --- Ende Bildpfade ---\n")
 
 
     try:
@@ -261,18 +262,18 @@ def create_typst_document(markdown_input: str,  keywords_str: str, name_of_pdf: 
             pdf_output=pdf_output_path,
             root_path=root_directory
         )
-        print(f"Kompilierung erfolgreich! PDF erstellt unter: {pdf_output_path}")
+        logging.info(f"Kompilierung erfolgreich! PDF erstellt unter: {pdf_output_path}")
     except FileNotFoundError as e:
-        print(f"FEHLER bei der Kompilierung: Datei nicht gefunden. Überprüfe die Pfade.")
-        print(f"  Fehlermeldung: {e}")
-        print(f"  Stelle sicher, dass die Typst-Datei existiert: {typst_input_path}")
-        print(f"  Stelle sicher, dass das Wurzelverzeichnis existiert: {root_directory}")
+        logging.info(f"FEHLER bei der Kompilierung: Datei nicht gefunden. Überprüfe die Pfade.")
+        logging.info(f"  Fehlermeldung: {e}")
+        logging.info(f"  Stelle sicher, dass die Typst-Datei existiert: {typst_input_path}")
+        logging.info(f"  Stelle sicher, dass das Wurzelverzeichnis existiert: {root_directory}")
     except typst.TypstCompileError as e: 
-        print(f"FEHLER bei der Typst-Kompilierung:")
-        print(e) 
+        logging.info(f"FEHLER bei der Typst-Kompilierung:")
+        logging.info(e) 
     except Exception as e:
-        print(f"Ein unerwarteter FEHLER ist während der Kompilierung aufgetreten: {e}")
-        print(f"  Typ des Fehlers: {type(e)}")
+        logging.info(f"Ein unerwarteter FEHLER ist während der Kompilierung aufgetreten: {e}")
+        logging.info(f"  Typ des Fehlers: {type(e)}")
 
-    print("\nSkript-Ausführung beendet.")
+    logging.info("\nSkript-Ausführung beendet.")
     return pdf_output_path

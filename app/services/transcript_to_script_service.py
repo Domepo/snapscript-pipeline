@@ -4,7 +4,7 @@ from utils.measure_time import measure_time
 from utils.token_count import count_tokens
 import re
 import os
-
+import logging
 
 def split_transcript_by_images(full_transcript_text: str) -> list[str]:
     """
@@ -32,7 +32,7 @@ def split_transcript_by_images(full_transcript_text: str) -> list[str]:
     if len(parts) % 2 == 1 and parts[-1].strip():
         chunks.append(parts[-1].strip())
 
-    print(f"Transkript in {len(chunks)} Abschnitte aufgeteilt.")
+    logging.info(f"Transkript in {len(chunks)} Abschnitte aufgeteilt.")
     return chunks
 
 
@@ -57,7 +57,8 @@ Hier ist der Textabschnitt:
 ---
 """
     try:
-        response = ollama.chat(
+        client = ollama.Client(host=config.OLLAMA_HOST)
+        response = client.chat(
             model=config.OLLAMA_MODEL,
             messages=[{'role': 'system', 'content': prompt}],
             options={"num_ctx": config.OLLAMA_NUM_CTX}
@@ -65,10 +66,10 @@ Hier ist der Textabschnitt:
         if response and response.get('message', {}).get('content'):
             return response['message']['content'].strip()
         else:
-            print("Ollama hat eine leere oder unerwartete Antwort für einen Abschnitt zurückgegeben.")
+            logging.info("Ollama hat eine leere oder unerwartete Antwort für einen Abschnitt zurückgegeben.")
             return None
     except Exception as e:
-        print(f"Fehler bei der Kommunikation mit Ollama für einen Abschnitt: {e}")
+        logging.info(f"Fehler bei der Kommunikation mit Ollama für einen Abschnitt: {e}")
         return None
 
 @measure_time
@@ -94,7 +95,8 @@ Hier ist das strukturierte Skript:
 ---
 """
     try:
-        response = ollama.chat(
+        client = ollama.Client(host=config.OLLAMA_HOST)
+        response = client.chat(
             model=config.OLLAMA_MODEL,
             messages=[{'role': 'system', 'content': prompt}],
             options={"num_ctx": config.OLLAMA_NUM_CTX}
@@ -102,10 +104,10 @@ Hier ist das strukturierte Skript:
         if response and response.get('message', {}).get('content'):
             return response['message']['content'].strip()
         else:
-            print("Ollama hat eine leere oder unerwartete Antwort für Titel/Zusammenfassung zurückgegeben.")
+            logging.info("Ollama hat eine leere oder unerwartete Antwort für Titel/Zusammenfassung zurückgegeben.")
             return None
     except Exception as e:
-        print(f"Fehler bei der Kommunikation mit Ollama für Titel/Zusammenfassung: {e}")
+        logging.info(f"Fehler bei der Kommunikation mit Ollama für Titel/Zusammenfassung: {e}")
         return None
 
 
@@ -118,16 +120,16 @@ def transcript_to_script_iterative(full_transcript_text: str, output_filename: s
     chunks = split_transcript_by_images(full_transcript_text)
     
     if not chunks:
-        print("Keine verarbeitbaren Abschnitte im Transkript gefunden.")
+        logging.info("Keine verarbeitbaren Abschnitte im Transkript gefunden.")
         return
 
     # 2. Jeden Abschnitt einzeln verarbeiten
     processed_parts = []
     for i, chunk in enumerate(chunks):
-        print(f"Verarbeite Abschnitt {i+1}/{len(chunks)}...")
+        logging.info(f"Verarbeite Abschnitt {i+1}/{len(chunks)}...")
         # Die Bild-Tags können lange Pfade haben, wir zeigen nur das Ende zur Identifikation
         end_of_chunk = chunk.strip()[-40:].replace('\n', ' ')
-        print(f"  -> Inhalt endet mit: '...{end_of_chunk}'")
+        logging.info(f"  -> Inhalt endet mit: '...{end_of_chunk}'")
         
         # Zähle die Tokens für den Abschnitt und passe die Konfiguration an
         config.OLLAMA_NUM_CTX = count_tokens(chunk)
@@ -137,14 +139,14 @@ def transcript_to_script_iterative(full_transcript_text: str, output_filename: s
             processed_parts.append(processed_chunk)
         else:
             # Falls ein Aufruf fehlschlägt, nehmen wir den Originaltext, um nichts zu verlieren.
-            print(f"  -> KI-Verarbeitung für Abschnitt {i+1} fehlgeschlagen. Verwende Originaltext.")
+            logging.info(f"  -> KI-Verarbeitung für Abschnitt {i+1} fehlgeschlagen. Verwende Originaltext.")
             processed_parts.append(f"## Unbenannter Abschnitt {i+1}\n\n{chunk}")
 
     # 3. Alle verarbeiteten Teile zu einem großen Text zusammenfügen
     structured_content = "\n\n".join(processed_parts)
     
     # 4. Titel und Zusammenfassung für den Gesamttext generieren
-    print("\nGeneriere finalen Titel und Zusammenfassung für das gesamte Skript...")
+    logging.info("\nGeneriere finalen Titel und Zusammenfassung für das gesamte Skript...")
 
     # Zähle die Tokens für den Abschnitt und passe die Konfiguration an
     config.OLLAMA_NUM_CTX = count_tokens(structured_content)
@@ -152,7 +154,7 @@ def transcript_to_script_iterative(full_transcript_text: str, output_filename: s
     header_part = generate_summary_and_title_with_ai(structured_content)
     
     if not header_part:
-        print("Konnte keinen Titel und keine Zusammenfassung erstellen. Das Skript wird ohne Header gespeichert.")
+        logging.info("Konnte keinen Titel und keine Zusammenfassung erstellen. Das Skript wird ohne Header gespeichert.")
         header_part = "# Unbenanntes Skript\n\n(Zusammenfassung konnte nicht generiert werden.)"
 
     # 5. Alles kombinieren und in eine Datei schreiben
@@ -162,8 +164,8 @@ def transcript_to_script_iterative(full_transcript_text: str, output_filename: s
     # try:
     #     with open(output_filename, 'w', encoding='utf-8') as f:
     #         f.write(final_script)
-    #     print(f"\n✅ Skript erfolgreich in die Datei '{output_filename}' geschrieben.")
-    #     print(f"   Pfad: {os.path.abspath(output_filename)}")
+    #     logging.info(f"\n✅ Skript erfolgreich in die Datei '{output_filename}' geschrieben.")
+    #     logging.info(f"   Pfad: {os.path.abspath(output_filename)}")
     # except IOError as e:
-    #     print(f"\n❌ Fehler beim Schreiben der Datei: {e}")
+    #     logging.info(f"\n❌ Fehler beim Schreiben der Datei: {e}")
     return final_script

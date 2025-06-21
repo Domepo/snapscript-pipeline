@@ -7,6 +7,7 @@ from services.ollama_fix_lecture_service import lecture_fix
 from utils.measure_time import measure_time
 from models.database import init_db
 from models.database import get_connection
+import logging
 
 def timestamp_to_milliseconds(ts: str) -> int:
     """Konvertiert Timestamp 'HH:MM:SS,mmm' in Millisekunden."""
@@ -33,7 +34,7 @@ def generate_transcript(video_path:str) -> dict:
     srt_writer = get_writer("srt", "data/videos")
     srt_writer(result, "text.srt")
 
-    print(f"SRT gespeichert: data/videos/text.srt")
+    logging.info(f"SRT gespeichert: data/videos/text.srt")
     return result
 @measure_time
 def store_transcript(result: dict, output_path:str = config.TRANSCRIPT_PATH) -> None:
@@ -98,7 +99,7 @@ def store_transcript(result: dict, output_path:str = config.TRANSCRIPT_PATH) -> 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(cleaned_text)
 
-    print(f"Transkript gespeichert unter: {output_path}")
-    print(f"Transkript + Zeilen in DB gespeichert (transcript_id={transcript_id})")
+    logging.info(f"Transkript gespeichert unter: {output_path}")
+    logging.info(f"Transkript + Zeilen in DB gespeichert (transcript_id={transcript_id})")
     return transcript_id
 

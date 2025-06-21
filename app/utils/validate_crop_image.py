@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-
+import logging
 
 def is_empty_or_two_tone(img_path: str,
                          var_thresh: float = 10.0,
