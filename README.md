@@ -1,6 +1,6 @@
 # 🎬 Video2Script‑Pipeline
 
-![output](assets\output.gif)
+![output](assets/output.gif)
 *Vom Vorlesungs‑Video zum strukturierten Skript & PDF – vollautomatisch.*
 ## Über das Projekt
 
@@ -54,7 +54,7 @@ Das Ergebnis ist ein lesefertiges Skript (Markdown + PDF), das Lehrende direkt
 ```
 
 <p align="center">
-  <img src="assets\example.png">
+  <img src="assets/example.png">
 </p>
 
 ---
