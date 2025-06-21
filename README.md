@@ -79,7 +79,7 @@ docker run -d --name video2script \
   -p 8501:8501 \
   -v $(pwd)/data:/app/data video2script
 ```
-Der Container ist nun über `localhost:8501` errecihbar
+Der Container ist nun über `localhost:8501` erreichbar
 ### Lokale Python‑Umgebung
 
 ```bash
