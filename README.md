@@ -1,6 +1,6 @@
 # 🎬 Video2Script‑Pipeline
 
-![Alt Text](assets\output.gif)
+![output](assets\output.gif)
 *Vom Vorlesungs‑Video zum strukturierten Skript & PDF – vollautomatisch.*
 ## Über das Projekt
 
